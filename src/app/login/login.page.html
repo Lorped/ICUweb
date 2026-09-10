@@ -1,20 +1,50 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Login
+      ICU - Login
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Login</ion-title>
-    </ion-toolbar>
-  </ion-header>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-  </div>
+  
+
+  <form id="container" [formGroup]="loginForm" (ngSubmit)="doLogin()">  
+    <ion-row>
+      <ion-col>
+        <ion-list >
+          <ion-item>
+            <ion-input type="text" placeholder="Username" formControlName="loginName"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-input type="password" placeholder="Password" formControlName="password">
+              <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+            </ion-input>
+          </ion-item>
+
+        </ion-list>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col>
+        <ion-button id="open-loading" color="danger" shape="round" expand="full" type="submit" [disabled]="!loginForm.valid" >Login</ion-button>
+          <ion-loading trigger="open-loading" message="Loading..." spinner="circles" duration="3000"></ion-loading>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="1">
+        <ion-checkbox name="saveme" checked="false" [(ngModel)]="saveme.checked" [ngModelOptions]="{ standalone: true }" style="vertical-align:middle;" ></ion-checkbox>
+      </ion-col>
+      <ion-col><div><ion-text color="medium">Ricordami</ion-text></div></ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>&nbsp;</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col><div style=" font-size:0.75em;"><ion-text color="medium">v 0.0.01 (Vykos) </ion-text></div></ion-col>
+    </ion-row>
+  </form>
 </ion-content>
