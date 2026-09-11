@@ -1,4 +1,5 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
+import { PushNotificationService } from '../push-notification.service';
 import {
   IonButton,
   IonCheckbox,
@@ -18,6 +19,9 @@ import {
 } from '@ionic/angular';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
+import { Backendservice } from '../backendservice';
+import { routes } from '../app.routes';
+
 
 @Component({
   selector: 'app-login',
@@ -42,17 +46,22 @@ import { FormsModule } from '@angular/forms';
     IonToolbar,
   ],
 })
-export class LoginPage {
+export class LoginPage implements OnInit {
   private loadingCtrl = inject(LoadingController);
+  private backendService = inject(Backendservice);
+  private pushNotificationService = inject(PushNotificationService);
 
   saveme = {
     checked: false,
   };
+  isDarkMode = false;
 
   loginForm = new FormGroup({
     loginName: new FormControl('', { nonNullable: true, validators: Validators.required }),
     password: new FormControl('', { nonNullable: true, validators: Validators.required })
   });
+
+  user_id = 0;
 
   constructor() {
     const loginName = window.localStorage.getItem('ICUuserid') ?? '';
@@ -64,6 +73,23 @@ export class LoginPage {
     }
   }
 
+  ngOnInit() {
+    this.applyAppPalette();
+  }
+  
+  private applyAppPalette() {
+    let savedDarkMode = window.localStorage.getItem('ICUdarkmode');
+    if (savedDarkMode === null) {
+      savedDarkMode = 'false';
+      window.localStorage.setItem('ICUdarkmode', savedDarkMode);
+    }
+
+    this.isDarkMode = savedDarkMode === 'true';
+    document.documentElement.classList.toggle('ion-palette-dark', this.isDarkMode);
+    document.documentElement.classList.remove('ion-palette-light');
+  }
+
+
   async doLogin() {
     if (this.saveme.checked) {
       window.localStorage.setItem('ICUuserid', this.loginForm.value.loginName ?? '');
@@ -73,17 +99,24 @@ export class LoginPage {
       window.localStorage.removeItem('ICUpasswd');
     }
     // Proceed with login logic here, e.g., call an API or navigate to another page
-    console.log('Login attempted with', this.loginForm.value);
+    // console.log('Login attempted with', this.loginForm.value);
 
-    await this.delay(2000);
+    this.backendService.login(this.loginForm.value.loginName ?? '', this.loginForm.value.password ?? '').subscribe({
+      next: (response) => {
+        // console.log('Login successful', response);
+        this.user_id = response.user_id ?? 0;
+        this.loadingCtrl.dismiss();
 
-    console.log('Finished waiting');
+        this.pushNotificationService.setup(this.user_id );
+      },
+      error: (error) => {
+        console.error('Login failed', error);
+        this.loadingCtrl.dismiss();
+      }
+    });
+
     
-    await this.loadingCtrl.dismiss();
   }
 
-  delay(ms: number) {
-    return new Promise( resolve => setTimeout(resolve, ms) );
-  }
 
 }

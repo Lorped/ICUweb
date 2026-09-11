@@ -8,7 +8,11 @@
 
 <ion-content [fullscreen]="true">
 
-  
+  <ion-row >
+    <ion-col class="alc">
+      <img [src]="isDarkMode ? 'assets/imgs/ICU-dark.png' : 'assets/imgs/ICU.svg'"/>
+    </ion-col>
+  </ion-row>
 
   <form id="container" [formGroup]="loginForm" (ngSubmit)="doLogin()">  
     <ion-row>
