@@ -19,8 +19,8 @@ import {
 } from '@ionic/angular';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
-import { Backendservice } from '../backendservice';
-import { routes } from '../app.routes';
+import { Backendservice, Personaggio } from '../backendservice';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -49,7 +49,9 @@ import { routes } from '../app.routes';
 export class LoginPage implements OnInit {
   private loadingCtrl = inject(LoadingController);
   private backendService = inject(Backendservice);
+  private personaggio = inject(Personaggio);
   private pushNotificationService = inject(PushNotificationService);
+  private router = inject(Router);
 
   saveme = {
     checked: false,
@@ -107,12 +109,39 @@ export class LoginPage implements OnInit {
         this.user_id = response.user_id ?? 0;
         this.loadingCtrl.dismiss();
 
-        this.pushNotificationService.setup(this.user_id );
+        this.backendService.getPersonaggio(this.user_id).subscribe({
+          next: (personaggio) => {
+            console.log('Personaggio retrieved', personaggio);
+            Object.assign(this.personaggio, personaggio);
+
+            this.pushNotificationService.setup(this.user_id );
+            this.router.navigate(['/tabs']);
+          },
+          error: (error) => {
+            switch (error['status']) {
+              case 404:
+                alert('Scheda non trovata');
+                break;
+              default:
+                alert('Server error');
+            }
+            console.error('Failed to retrieve personaggio', error);
+          }
+        });
+
+        
       },
       error: (error) => {
         console.error('Login failed', error);
         this.loadingCtrl.dismiss();
-      }
+        switch (error['status']) {
+          case 401:
+            alert('Non autorizzato');
+            break;
+          default:
+            alert('Server error');
+        }
+  }
     });
 
     
