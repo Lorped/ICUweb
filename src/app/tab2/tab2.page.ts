@@ -1,14 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton } from '@ionic/angular';
-
-import { AfterViewInit,   ElementRef, OnDestroy, ViewChild , inject } from '@angular/core';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, IonButton, IonRow, IonCol } from '@ionic/angular';
 import { LoadingController, Platform } from '@ionic/angular';
 import jsQR from 'jsqr';
 import { Router } from '@angular/router';
-import { IonButton, IonRow,  IonCol } from "@ionic/angular";
-
 
 @Component({
   selector: 'app-tab2',
@@ -16,7 +12,7 @@ import { IonButton, IonRow,  IonCol } from "@ionic/angular";
   styleUrls: ['./tab2.page.scss'],
   imports: [IonButton, IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, IonRow, IonCol, CommonModule, FormsModule]
 })
-export class Tab2Page implements  AfterViewInit, OnDestroy {
+export class Tab2Page implements AfterViewInit, OnDestroy {
   @ViewChild('video') video?: ElementRef<HTMLVideoElement>;
   @ViewChild('canvas') canvas?: ElementRef<HTMLCanvasElement>;
 
@@ -37,6 +33,7 @@ export class Tab2Page implements  AfterViewInit, OnDestroy {
   private loadingCtrl = inject(LoadingController);
   private router = inject(Router);
   private platform = inject(Platform);
+  private cdr = inject(ChangeDetectorRef);
 
   constructor() {
     const isStandaloneMode = (): boolean => 
@@ -53,9 +50,13 @@ export class Tab2Page implements  AfterViewInit, OnDestroy {
     this.canvasContext = this.canvasElement?.getContext('2d', { willReadFrequently: true }) ?? undefined;
   }
 
+  ionViewWillLeave() {
+    this.stopScan();
+  }
+
   ngOnDestroy() {
     this.scanResult = null;
-    //this.stopScan();
+    this.stopScan();
   }
 
   async startScan() {
@@ -94,10 +95,10 @@ export class Tab2Page implements  AfterViewInit, OnDestroy {
 
       this.scanActive = true;
       this.lastscantime = 0;
+      this.cdr.detectChanges();
       this.scheduleNextScan();
 
     } catch (error) {
-      alert('Error starting scan: ' + error);
       console.error('Error starting scan:', error);
       await this.stopScan();
     }
@@ -125,6 +126,7 @@ export class Tab2Page implements  AfterViewInit, OnDestroy {
       await this.loading.dismiss().catch(() => undefined);
       this.loading = undefined;
     }
+    this.cdr.detectChanges();
   }
 
 

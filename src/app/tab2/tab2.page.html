@@ -11,12 +11,19 @@
 
   <ion-row style="align-items: center;">
     <ion-col ><hr/></ion-col>
-    <ion-col size="6" style="text-align: center;"><ion-button color="danger" shape="round" outline (click)="startScan()" [disabled]="scanActive">New Scan</ion-button></ion-col>
+    <ion-col size="6" style="text-align: center;">
+      @if (!scanActive) {
+        <ion-button color="danger" shape="round" outline (click)="startScan()">
+          New Scan
+        </ion-button>
+      } @else {
+        <ion-button color="medium" shape="round" fill="solid" (click)="stopScan()">
+          Stop Scan
+        </ion-button>
+      }
+    </ion-col>
     <ion-col ><hr/></ion-col>
   </ion-row>
-
-  
-
 
   <video #video [hidden]="!scanActive" width="100%"></video>
   <canvas #canvas hidden></canvas>
