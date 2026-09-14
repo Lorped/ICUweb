@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar color="medium">
-    <ion-title>tab1</ion-title>
+    <ion-title>Personaggio</ion-title>
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
@@ -9,5 +9,99 @@
 
 <ion-content [fullscreen]="true">
 
+
+
+  <h3 class="mypad">{{personaggio['nomepg']}}</h3>
+
+  <div style=" border: 1px solid #ff0000;   border-radius: 2px; margin-left:5px; margin-right:5px;" >
+    <ion-grid >
+      <ion-row>
+        <ion-col size="2" >Clan</ion-col>
+        <ion-col size="3" style="color:#FF0000;">{{personaggio['nomeclan']}}</ion-col>
+        <ion-col size="2" >Dominio</ion-col>
+        <ion-col size="5" style="color:#FF0000;">{{personaggio['nomedominio']}}</ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="12" >Società segreta: <span style="color:#FF0000;">{{personaggio['nomesocieta']}}</span></ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+  <div class="mypad">
+
+    <ion-row style="align-items: center;">
+      <ion-col ><hr/></ion-col>
+      <ion-col size="6" style="text-align: center; font-size: 1em;">Discipline</ion-col>
+      <ion-col ><hr/></ion-col>
+    </ion-row>
+
+  @for (desc of this.personaggio['discipline']; track desc) {
+  <ion-row>
+      <ion-col size="9">{{ desc.nomedisciplina }}</ion-col>
+      <ion-col>
+        @for (item of 5|times ; track item; let ix = $index) {
+          <i class="fa fa-circle-o mysmallicon " [ngClass]="{'fa-circle myred2': ix < desc.livello}"></i>
+        }<br>
+      </ion-col>
+  </ion-row>
+  }
+
+
+  <ion-row style="align-items: center;">
+    <ion-col ><hr/></ion-col>
+    <ion-col size="6" style="text-align: center; font-size: 1em;">Competenze</ion-col>
+    <ion-col ><hr/></ion-col>
+  </ion-row>
+
+
+
+  <ion-accordion-group>
+    @for ( sk of this.personaggio.skills; track sk) {
+    <ion-accordion value="{{ sk.nomeskill }}">
+      <ion-item slot="header" color="light">
+
+        <ion-label style="display: flex; justify-content: space-between;">
+          {{ sk.nomeskill }}
+        <div class="ion-text-end">
+          @for (item of 5|times ; track item; let ix = $index) {
+            <i class="fa fa-circle-o mysmallicon " [ngClass]="{'fa-circle myred2': ix < sk.livello}"></i>
+          }
+        </div>
+      </ion-label>
+    </ion-item>
+    @for (ssk of sk.subskills; track ssk; let ix = $index) {
+    <div class="ion-padding" slot="content" style="display: flex; justify-content: space-between;"> 
+      
+        -- {{ ssk.nomeskill }}
+
+        <div class="ion-text-end">
+        @for (item of 5|times ; track item; let ix = $index) {
+          <i class="fa fa-circle-o mysmallicon " [ngClass]="{'fa-circle myred2': ix < ssk.livello}"></i>
+        }
+      </div>
+
+    </div>
+    }
+  </ion-accordion>
+}
   
+  <ion-accordion value="Varie">
+    <ion-item slot="header" color="light">
+      <ion-label style="display: flex; justify-content: space-between;">Altri skill</ion-label>
+    </ion-item>
+    @for (sk of personaggio.otherskills; track sk; let ix = $index) {
+      <div class="ion-padding" slot="content" style="display: flex; justify-content: space-between;">       
+          {{ sk.nomeskill }}
+          <div class="ion-text-end">
+          @for (item of 5|times ; track item; let ix = $index) {
+            <i class="fa fa-circle-o mysmallicon " [ngClass]="{'fa-circle myred2': ix < sk.livello}"></i>
+          }
+        </div>
+      </div>
+    }
+  </ion-accordion>
+</ion-accordion-group>
+
+  </div>
 </ion-content>

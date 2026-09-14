@@ -48,6 +48,7 @@ export class Personaggio {
   discipline: Disciplina[] = [];  //array delle discipline del personaggio
   skills: Skill[] = [];  //array delle skill del personaggio
   otherskills: Otherskill[] = [];  //array delle altre skill del personaggio
+  attributi: Otherskill[] = [];  //array degli attributi del personaggio
 }
 
 

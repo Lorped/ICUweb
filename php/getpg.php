@@ -37,6 +37,8 @@
 	if ( $res = mysqli_fetch_array($Result,MYSQLI_ASSOC)   ) {
 		$out = $res;
 
+		$IDclan = $out['IDclan'];  //mi serve dopo
+
 		$MySqlOtherskills = "SELECT skill.IDskill, nomeskill, livello FROM skill
 			LEFT JOIN skill_main ON skill.IDskill = skill_main.IDskill
 			WHERE user_id = '$user_id' and tipologia = 1 ";
@@ -85,7 +87,28 @@
 
 		$out['skills'] = $skills;
 
+/****************  Discipline  */
 
+		$discipline = [];
+
+		$MysqlDiscipline = "SELECT discipline.IDdisciplina, nomedisciplina, livello FROM discipline
+			LEFT JOIN discipline_main ON discipline.IDdisciplina = discipline_main.IDdisciplina
+			WHERE user_id = '$user_id';"; 
+		$ResultDiscipline = mysqli_query($db, $MysqlDiscipline);
+		while ($resDiscipline = mysqli_fetch_array($ResultDiscipline, MYSQLI_ASSOC)) {
+			$discipline[] = $resDiscipline;
+		}
+		$out['discipline'] = $discipline;
+
+		$MySqlAttributi = "SELECT skill.IDskill, nomeskill, livello FROM skill
+			LEFT JOIN skill_main ON skill.IDskill = skill_main.IDskill
+			WHERE user_id = '$user_id' and tipologia = 2 ";
+		$ResultAttributi = mysqli_query($db, $MySqlAttributi);
+		$Attributi = [];
+		while ($resAttributo = mysqli_fetch_array($ResultAttributi, MYSQLI_ASSOC)) {
+			$Attributi[] = $resAttributo;
+		}
+		$out['attributi'] = $Attributi;
 
 		header("HTTP/1.1 200 OK");
 		echo json_encode($out);

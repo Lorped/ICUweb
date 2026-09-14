@@ -39,3 +39,24 @@
 
 
 @import 'font-awesome/css/font-awesome.css'; 
+
+
+
+hr {
+    color: #ff0000;
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #f00;
+    margin: 1em 0;
+    padding: 0;
+}
+
+.myred2 {
+    color: #d90028;
+}
+
+.mysmallicon {
+    //font-size: 0.75em;
+    padding-right: 2px;
+}
