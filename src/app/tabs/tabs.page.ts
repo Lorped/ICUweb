@@ -50,7 +50,7 @@ addIcons({ contractOutline, keypadOutline, logOutOutline, personOutline });
 })
 export class TabsPage implements OnInit {
 
-  private personaggio = inject(Personaggio);
+  // private personaggio = inject(Personaggio);
   private router = inject(Router);
   paletteToggle = false;
 

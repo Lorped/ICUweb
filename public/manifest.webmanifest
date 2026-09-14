@@ -1,6 +1,6 @@
 {
-  "name": "app",
-  "short_name": "app",
+  "name": "Ivory Cross University",
+  "short_name": "ICU",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",

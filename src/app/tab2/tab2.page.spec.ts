@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { describe, beforeEach, it, expect } from 'vitest';
 import { Tab2Page } from './tab2.page';
 
 describe('Tab2Page', () => {
