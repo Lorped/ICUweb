@@ -30,6 +30,26 @@ export class Otherskill {  //classe per le altre skill del personaggio
     public livello = 0;
 }
 
+export class Esito {
+    public motivo = '';
+    public descrizione = '';
+    public sino = '';
+}
+
+export class Oggetto {
+    public IDoggetto = '';
+    public nomeoggetto = '';
+    public descrizione = '';
+    public esito: Array<Esito> = [];
+    public domanda = '';
+    public R1 = '';
+    public R2 = '';
+    public esitoSI: Array<Esito> = [];
+    public esitoNO: Array<Esito> = [];
+    public datascan = '';
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -60,15 +80,19 @@ export class Backendservice {
     constructor() {}
 
     login (nomeutente: string, password: string) {
-        return this.http.get<LoginResponse>(`https://www.roma-by-night.it/ICU/login.php?nomeutente=${nomeutente}&password=${password}`);
+      return this.http.get<LoginResponse>(`https://www.roma-by-night.it/ICU/login.php?nomeutente=${nomeutente}&password=${password}`);
     }
 
     savePushToken (user_id: number, token: string) {
-        return this.http.get(`https://www.roma-by-night.it/ICU/savePushToken.php?user_id=${user_id}&token=${token}`);
+      return this.http.get(`https://www.roma-by-night.it/ICU/savePushToken.php?user_id=${user_id}&token=${token}`);
     }
 
     getPersonaggio(user_id: number) {
-        return this.http.get<Personaggio>(`https://www.roma-by-night.it/ICU/getpg.php?user_id=${user_id}`);
+      return this.http.get<Personaggio>(`https://www.roma-by-night.it/ICU/getpg.php?user_id=${user_id}`);
+    }
+
+    barcode(user_id: number, barcode: string) {
+      return this.http.get<any>('https://www.roma-by-night.it/ICU/barcode.php?id=' + user_id + '&barcode=' + barcode);
     }
 
 }
