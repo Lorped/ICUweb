@@ -4,13 +4,15 @@ import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, IonButton, IonRow, IonCol } from '@ionic/angular';
 import { LoadingController, Platform } from '@ionic/angular';
 import jsQR from 'jsqr';
-import { Router } from '@angular/router';
+//import { Router } from '@angular/router';
+import { Backendservice, Personaggio, Oggetto } from '../backendservice';
+import { IonModal, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonList, IonItem, IonLabel, IonText } from '@ionic/angular';
 
 @Component({
   selector: 'app-tab2',
   templateUrl: './tab2.page.html',
   styleUrls: ['./tab2.page.scss'],
-  imports: [IonButton, IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, IonRow, IonCol, CommonModule, FormsModule]
+  imports: [IonButton, IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, IonRow, IonCol, CommonModule, FormsModule, IonModal, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonList, IonItem, IonLabel, IonText]
 })
 export class Tab2Page implements AfterViewInit, OnDestroy {
   @ViewChild('video') video?: ElementRef<HTMLVideoElement>;
@@ -31,9 +33,17 @@ export class Tab2Page implements AfterViewInit, OnDestroy {
   private loading?: HTMLIonLoadingElement;
 
   private loadingCtrl = inject(LoadingController);
-  private router = inject(Router);
+  //private router = inject(Router);
   private platform = inject(Platform);
   private cdr = inject(ChangeDetectorRef);
+  private backendservice = inject(Backendservice);
+  private personaggio = inject(Personaggio);
+
+  oggetto: Oggetto = new Oggetto();
+  giarisposto = false;
+  rispostaselezionata = '';
+  isModalOpen = false;
+  oldscan: Array<Oggetto> = [];
 
   constructor() {
     const isStandaloneMode = (): boolean => 
@@ -42,6 +52,11 @@ export class Tab2Page implements AfterViewInit, OnDestroy {
     if (this.platform.is('ios') && isStandaloneMode()) {
       console.log ("I'm an iOS PWA!!")
     }
+    this.backendservice.getscan(this.personaggio.user_id).subscribe((data) => {
+      this.oldscan = data;
+      // senza zone.js (polyfills vuoto) serve forzare il change detection
+      this.cdr.detectChanges();
+    });
   }
 
   ngAfterViewInit() {
@@ -186,11 +201,46 @@ export class Tab2Page implements AfterViewInit, OnDestroy {
     this.scanResult = value;
     await this.stopScan();
     console.log(`Scanned QR code: ${value}`);
-    alert(`Scanned QR code: ${value}`);
+    // alert(`Scanned QR code: ${value}`);
 
-    //await this.router.navigate(['/oggetto']);
-    
+    this.backendservice.barcode(this.personaggio.user_id, this.oggetto.IDoggetto).subscribe((data) => {
+
+      this.isModalOpen = true;
+      
+      // console.log(data);
+
+      this.oggetto.nomeoggetto = data.nomeoggetto;
+      this.oggetto.descrizione = data.descrizione;
+      this.oggetto.esito = data.esito;
+      this.oggetto.domanda = data.domanda;
+      this.oggetto.R1 = data.R1;
+      this.oggetto.R2 = data.R2;
+      this.oggetto.esitoSI = data.esitoSI;
+      this.oggetto.esitoNO = data.esitoNO;  
+
+      this.giarisposto = false;
+      this.rispostaselezionata = '';
+
+      //console.log(this.oggetto);
+    });    
   }
+
+
+  risposta(risposta: string) {
+    //console.log('Risposta selezionata:', risposta);
+    this.giarisposto = true;
+    this.rispostaselezionata = risposta;
+  }
+
+
+  cancel() {
+    this.isModalOpen = false;
+    this.backendservice.getscan(this.personaggio.user_id).subscribe((data) => {
+      this.oldscan = data;
+      this.cdr.detectChanges();
+    });
+  }
+
 
 
   isValidIdentifier(value: string): boolean {
@@ -199,6 +249,12 @@ export class Tab2Page implements AfterViewInit, OnDestroy {
     return pattern.test(value);
   }
 
+  ionViewWillEnter() {
+    this.backendservice.getscan(this.personaggio.user_id).subscribe((data) => {
+      this.oldscan = data;
+      this.cdr.detectChanges();
+    });
+  }
 
 
 }

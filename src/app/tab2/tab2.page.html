@@ -27,4 +27,139 @@
 
   <video #video [hidden]="!scanActive" width="100%"></video>
   <canvas #canvas hidden></canvas>
+
+
+
+  @for (ogg of this.oldscan; track ogg) {
+  <ion-card>
+    <ion-card-header>
+        <ion-card-subtitle>{{ogg.datascan}}</ion-card-subtitle>
+        <ion-card-title>{{ogg.nomeoggetto}}</ion-card-title>
+        <ion-card-subtitle>{{ogg.descrizione}}</ion-card-subtitle>
+      </ion-card-header>
+      @if (ogg.esito.length > 0) {
+        <ion-card-content>
+          @for (xx of ogg.esito ; track xx) {
+            <ion-item>
+              <span class="selectable">
+              <p><ion-text color="primary"><strong>{{xx.motivo}}</strong></ion-text> {{xx.descrizione}} </p>
+              </span>
+            </ion-item>
+          }
+        </ion-card-content>
+      }
+    </ion-card>
+  }
+
+
+
+
+ <!------    MODAL  PER LA VISUALIZZAZIONE DELL'OGGETTO -->
+
+  <ion-modal [isOpen]="isModalOpen" >
+    <ng-template>
+      <ion-header>
+        <ion-toolbar color="medium">
+          <ion-buttons slot="end">
+            <ion-button (click)="cancel()">Indietro</ion-button>
+          </ion-buttons>
+          <ion-title>Analisi</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content >
+  
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>{{oggetto.nomeoggetto}}</ion-card-title>
+            <ion-card-subtitle>{{oggetto.descrizione}}</ion-card-subtitle>
+          </ion-card-header>
+  
+          @if (this.oggetto.esito.length > 0) {
+            <ion-card-content>
+              <ion-list>
+              @for (xx of this.oggetto.esito ; track xx) {
+                  <ion-item>
+                    <ion-label> <ion-text color="primary"> {{xx.motivo}} </ion-text> {{xx.descrizione}} </ion-label>               
+                  </ion-item>            
+              }
+            </ion-list>
+            </ion-card-content>
+          }
+        </ion-card>
+
+        @if (this.oggetto.domanda && this.oggetto.domanda !== '') {
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>{{oggetto.domanda}}</ion-card-title>
+            </ion-card-header>
+
+            <div style="text-align:center; justify-content: center; display: flex; ">
+            <ion-button *ngIf="rispostaselezionata !== 'NO'" size="small" color="success" (click)="risposta('SI')"  [disabled]="giarisposto" style="margin-left: 15%;margin-right: 15%;">SI</ion-button>
+            <ion-button *ngIf="rispostaselezionata !== 'SI'" size="small" color="danger" (click)="risposta('NO')" [disabled]="giarisposto" style="margin-left: 15%;margin-right: 15%;">NO</ion-button>
+            </div>
+
+
+    
+            <ion-card-content>
+               @if (rispostaselezionata === 'SI' ) {  
+                <ion-list>
+                  <ion-item>
+                    <ion-label> {{oggetto.R1}} </ion-label>               
+                  </ion-item>   
+
+                  @for (xx of this.oggetto.esitoSI ; track xx) {
+                      <ion-item>
+                        <ion-label> <ion-text color="primary"> {{xx.motivo}} </ion-text> {{xx.descrizione}} </ion-label>               
+                      </ion-item>            
+                  }
+                </ion-list>
+              }
+              @if (rispostaselezionata === 'NO' ) {
+                <ion-list>
+                  <ion-item>
+                    <ion-label> {{oggetto.R2}} </ion-label>               
+                  </ion-item>  
+
+                  @for (xx of this.oggetto.esitoNO ; track xx) {
+                      <ion-item>
+                        <ion-label> <ion-text color="primary"> {{xx.motivo}} </ion-text> {{xx.descrizione}} </ion-label>               
+                      </ion-item>            
+                  }
+                </ion-list>
+              }
+            </ion-card-content>
+          </ion-card>
+        }
+
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!--------      FINE MODAL ------->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </ion-content>
+

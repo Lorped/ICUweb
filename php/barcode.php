@@ -23,7 +23,7 @@
 
 	header('Content-Type: text/html; charset=utf-8');
 
-	//include ('messaggi.inc.php');
+	include ('messaggi.inc.php');
 	require_once __DIR__ . '/db2.inc.php';    // NEW MYSQL //
 
 
@@ -122,7 +122,7 @@
 			$messaggio = "ha scansionato oggetto ". $res8['nomeoggetto'] ." e il suo gemello ". $res10['nomeoggetto'] .".";
 		
 
-			//user2master($user_id,$messaggio, $db );
+			user2master($user_id,$messaggio, $db );
 
 			$Mysql11="SELECT nomepg FROM personaggio WHERE idutente=$user_id";
 			if ( $res11=mysqli_fetch_array(mysqli_query($db, $Mysql11)) ) {

@@ -95,4 +95,8 @@ export class Backendservice {
       return this.http.get<any>('https://www.roma-by-night.it/ICU/barcode.php?id=' + user_id + '&barcode=' + barcode);
     }
 
+    getscan(user_id: number) {
+      return this.http.get<any>('https://www.roma-by-night.it/ICU/getscan.php?user_id=' + user_id);
+    }
+
 }
