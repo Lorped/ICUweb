@@ -100,16 +100,13 @@ require_once __DIR__ . '/db2.inc.php';  //MYSQLI //
 		$nomepaired = $resx['nomeoggetto'];
 		
 
-		$fulloggetto = [
-			'oggetto' => $res,
-			'condizioni' => $condizioni,
-			'condizioni2' => $condizioni2,
-
-			'paired' => [
-				'idpaired' => $ids,
-				'nomepaired' => $nomepaired,
-				'descpaired' => $descpaired
-			]
+		$fulloggetto = $res;
+		$fulloggetto['condizioni'] = $condizioni;
+		$fulloggetto['condizioni2'] = $condizioni2;
+		$fulloggetto['paired'] = [
+			'idpaired' => $ids,
+			'nomepaired' => $nomepaired,
+			'descpaired' => $descpaired
 		];
 
 		$oggetti[] = $fulloggetto;
