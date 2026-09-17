@@ -22,7 +22,10 @@ require_once __DIR__ . '/db2.inc.php';  //MYSQLI //
 
 	$oggetti = [];
 
-	$MySql = "SELECT * FROM oggetti order by IDoggetto ";
+	$MySql = "SELECT IDoggetto, barcode, nomeoggetto, descrizione, fissomobile, ifdomanda, domanda, r1, r2, nomedisciplina as adddisciplina 
+	FROM oggetti 
+	left join discipline_main on oggetti.adddisciplina = discipline_main.IDdisciplina 
+	order by IDoggetto ";
 	$Result = mysqli_query($db, $MySql);
 
 	while ( $res = mysqli_fetch_array ($Result,MYSQLI_ASSOC) ) {
