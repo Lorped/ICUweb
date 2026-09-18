@@ -29,7 +29,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `clan` (
   `IDclan` int(11) NOT NULL,
-  `Nomeclan` char(50) COLLATE utf8_unicode_ci NOT NULL,
+  `nomeclan` char(50) COLLATE utf8_unicode_ci NOT NULL,
   `clanimg` char(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `Disc1` int(11) NOT NULL,
   `Disc2` int(11) NOT NULL,
