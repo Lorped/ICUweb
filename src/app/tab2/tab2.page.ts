@@ -201,11 +201,10 @@ export class Tab2Page implements AfterViewInit, OnDestroy {
     this.scanResult = value;
     await this.stopScan();
     console.log(`Scanned QR code: ${value}`);
-    // alert(`Scanned QR code: ${value}`);
+     //alert(`Scanned QR code: ${value}`);
 
-    this.backendservice.barcode(this.personaggio.user_id, this.oggetto.IDoggetto).subscribe((data) => {
-
-      this.isModalOpen = true;
+    this.backendservice.barcode(this.personaggio.user_id, this.scanResult).subscribe((data) => {
+      //alert(`data: ${JSON.stringify(data)}`);
       
       // console.log(data);
 
@@ -221,8 +220,15 @@ export class Tab2Page implements AfterViewInit, OnDestroy {
       this.giarisposto = false;
       this.rispostaselezionata = '';
 
+      this.isModalOpen = true;
+      this.cdr.detectChanges();
+
       //console.log(this.oggetto);
-    });    
+    },
+    error => {
+      alert(`Error fetching barcode data: ${JSON.stringify(error)}`);
+    }
+  );    
   }
 
 

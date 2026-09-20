@@ -44,6 +44,8 @@ require_once __DIR__ . '/db2.inc.php';  //MYSQLI //
 			switch ( $tipocond ) {
 				case 'S':
 				case 'SS':
+				case 'O':					
+				case 'A':	
 					$ids=$res2['tabcond'];
 					$Mysqlx = "SELECT nomeskill FROM skill_main WHERE IDskill = $ids";
 					$Resultx = mysqli_query($db, $Mysqlx);
@@ -70,7 +72,14 @@ require_once __DIR__ . '/db2.inc.php';  //MYSQLI //
 					$Resultx = mysqli_query($db, $Mysqlx);
 					$resx = mysqli_fetch_array($Resultx);
 					$cond = $resx['nomedominio'];
-					break;					
+					break;			
+				case 'C':
+					$ids=$res2['tabcond'];
+					$Mysqlx="SELECT nomeclan FROM clan WHERE IDclan = $ids";
+					$Resultx = mysqli_query($db, $Mysqlx);
+					$resx = mysqli_fetch_array($Resultx);
+					$cond = $resx['nomeclan'];
+					break;								
 			}
 
 			$res2['tipocond'] = $cond;

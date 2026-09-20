@@ -89,14 +89,14 @@
 
 
 
-	//verifica PARIRED //
+	//verifica PAIRED //
 
-	$Mysql9="SELECT * FROM paired WHERE idoggetto1 = '$idx' or idoggetto2 = '$idx' ";
+	$Mysql9="SELECT * FROM paired WHERE IDoggetto1 = '$idx' or IDoggetto2 = '$idx' ";
 	$Result9=mysqli_query($db, $Mysql9);
 	if ( $res9=mysqli_fetch_array($Result9) ) { // esiste un oggetto gemello
 
 		//inserisco il log di questo oggetto e cancello i log più vecchi di 2 ore
-		$MySql3 = "DELETE FROM `logscanpaired` WHERE DATE_ADD(logscanpaired.data, INTERVAL 120 MINUTE ) < NOW() ";
+		$MySql3 = "DELETE FROM `logscanpaired` WHERE DATE_ADD(logscanpaired.datascan, INTERVAL 120 MINUTE ) < NOW() ";
 	  	$Result3 = mysqli_query($db, $MySql3);
       	$MySql3 = "INSERT INTO logscanpaired (IDoggetto, user_id, datascan ) VALUES ($idx, $user_id, NOW() )  ON DUPLICATE KEY UPDATE datascan = NOW()";
       	$Result3 = mysqli_query($db, $MySql3);
@@ -110,7 +110,7 @@
 		}
 		// altrooggetto è stato scansionato da poco ?
 		$MySql6 = "SELECT * FROM logscanpaired WHERE
-        	IDoggetto = $altrooggetto AND user_id = $user_id AND DATE_ADD(logscanpaired.data, INTERVAL 3 MINUTE) > NOW() ";
+        	IDoggetto = $altrooggetto AND user_id = $user_id AND DATE_ADD(logscanpaired.datascan, INTERVAL 3 MINUTE) > NOW() ";
       	$Result6 = mysqli_query($db, $MySql6);
       	if ( $res6 = mysqli_fetch_array($Result6) ) {
         	// ok paired
@@ -124,7 +124,7 @@
 
 			user2master($user_id,$messaggio, $db );
 
-			$Mysql11="SELECT nomepg FROM personaggio WHERE idutente=$user_id";
+			$Mysql11="SELECT nomepg FROM personaggio WHERE user_id=$user_id";
 			if ( $res11=mysqli_fetch_array(mysqli_query($db, $Mysql11)) ) {
 					$nomepg=$res11['nomepg'];
 				} else {
@@ -169,13 +169,13 @@
 		if ($cond['tipocond'] == 'D' ){
 			$ids=$cond['tabcond'];
 			$Mysql4="SELECT * FROM discipline left join discipline_main on discipline_main.IDdisciplina=discipline.IDdisciplina
-				WHERE discipline.IDdisciplina = $ids AND idutente = '$user_id' ";
+				WHERE discipline.IDdisciplina = $ids AND discipline.user_id = '$user_id' ";
 			$Result4=mysqli_query($db, $Mysql4);
 
 			if ( $res4=mysqli_fetch_array($Result4)  ) {		
 				if ($res4['livello'] >= $cond['valcond'] ) {
 					$rigarisp = [
-						'motivo' => $res4['nomedisc'],
+						'motivo' => $res4['nomedisciplina'],
 						'descrizione' => $cond['descrX'],
 						'sino' => $cond['risp']
 					];
@@ -184,16 +184,65 @@
 			}
 		}
 
+		// controllo dominio
+		if ($cond['tipocond'] == 'Y' ){
+			$ids=$cond['tabcond'];
+			$Mysql4="SELECT * FROM personaggio left join dominio on dominio.IDdominio=personaggio.IDdominio
+				WHERE dominio.IDdominio = $ids AND personaggio.user_id = '$user_id' ";
+			$Result4=mysqli_query($db, $Mysql4);
 
+			if ( $res4=mysqli_fetch_array($Result4)  ) {		
+					$rigarisp = [
+						'motivo' => $res4['nomedominio'],
+						'descrizione' => $cond['descrX'],
+						'sino' => $cond['risp']
+					];
+					$esito[] = $rigarisp;	
+			}
+		}
 
+		// controllo clan
+		if ($cond['tipocond'] == 'C' ){
+			$ids=$cond['tabcond'];
+			$Mysql4="SELECT * FROM personaggio left join clan on clan.IDclan=personaggio.IDclan
+				WHERE clan.IDclan = $ids AND personaggio.user_id = '$user_id' ";
+			$Result4=mysqli_query($db, $Mysql4);
 
+			if ( $res4=mysqli_fetch_array($Result4)  ) {		
+					$rigarisp = [
+						'motivo' => $res4['nomeclan'],
+						'descrizione' => $cond['descrX'],
+						'sino' => $cond['risp']
+					];
+					$esito[] = $rigarisp;	
+			}
+		}
 
-		// SKILL GENERICI
-
+		// controllo societa
 		if ($cond['tipocond'] == 'X' ){
 			$ids=$cond['tabcond'];
+			$Mysql4="SELECT * FROM personaggio left join societa on societa.IDsocieta=personaggio.IDsocieta
+				WHERE societa.IDsocieta = $ids AND personaggio.user_id = '$user_id' ";
+			$Result4=mysqli_query($db, $Mysql4);
+
+			if ( $res4=mysqli_fetch_array($Result4)  ) {		
+					$rigarisp = [
+						'motivo' => $res4['nomesocieta'],
+						'descrizione' => $cond['descrX'],
+						'sino' => $cond['risp']
+					];
+					$esito[] = $rigarisp;	
+			}
+		}
+
+
+
+		// Altri SKILL e attributi
+
+		if ($cond['tipocond'] == 'O' || $cond['tipocond'] == 'A' ){
+			$ids=$cond['tabcond'];
 			$Mysql4="SELECT * FROM skill left join skill_main on skill_main.IDskill=skill.IDskill
-				WHERE skill.IDskill = $ids AND idutente = '$user_id' ";
+				WHERE skill.IDskill = $ids AND skill.user_id = '$user_id' ";
 			$Result4=mysqli_query($db, $Mysql4);
 
 
@@ -227,7 +276,7 @@
 			$ids=$cond['tabcond'];
 
 			$Mysql4="SELECT * FROM skill left join skill_main on skill_main.IDskill=skill.IDskill
-				WHERE skill_main.IDskill = $ids AND user_id = '$user_id' ";
+				WHERE skill_main.IDskill = $ids AND skill.user_id = '$user_id' ";
 			$Result4=mysqli_query($db, $Mysql4);
 
 
@@ -242,7 +291,7 @@
 
 						$mysql5="SELECT * FROM skill_main 
 							left join skill on skill_main.IDskill = skill.IDskill
-							WHERE skill_main.IDskill =  $specifica  AND user_id = '$user_id' ";
+							WHERE skill_main.IDskill =  $specifica  AND skill.user_id = '$user_id' ";
 
 						$Result5=mysqli_query($db, $mysql5);
 
@@ -327,8 +376,8 @@
 	} else {
 		// quello che può succedere è che devo inserire un "paired" ossia "motivo == Accoppiamento"
 		foreach ($esito as $riga) {
-			if ( $riga['motivo'] === 'Accoppiamento' ) {
-				// gestisci il caso specifico per "Accoppiamento" se necessario
+			if ( strpos($riga['motivo'], 'Accoppiamento ') === 0 ) {
+				// gestisci il caso specifico di "Accoppiamento" se necessario
 				$mot = mysqli_real_escape_string($db, $riga['motivo']);
 				$descr=mysqli_real_escape_string($db, $riga['descrizione']);
 				$mysql3 = "INSERT ignore INTO logscanfull  (user_id, IDoggetto, motivo, descrizione)

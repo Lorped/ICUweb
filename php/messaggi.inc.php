@@ -31,7 +31,7 @@ function pushmsg (array $data) {
 
 function user2master ( int $idutente, string $testo, mysqli $db ) {
 
-	$Mysql="SELECT nomepg FROM personaggio WHERE idutente=$idutente";
+	$Mysql="SELECT nomepg FROM personaggio WHERE user_id=$idutente";
 	$Result=mysqli_query($db, $Mysql);
 	if ( $res=mysqli_fetch_array($Result) ) {
 		$nomepg=$res['nomepg'];
@@ -86,13 +86,13 @@ function master2master ( string $testo ) {
 
 function master2user ( int $idutente , string $testo , mysqli $db) {
 
-	$Mysql="SELECT registrationID FROM utente WHERE idutente=$idutente";
+	$Mysql="SELECT token FROM push_subscriptions WHERE user_id=$idutente";
 	$Result=mysqli_query($db, $Mysql);
 	$res=mysqli_fetch_array($Result);
 
-	if ($res['registrationID'] != "" ) {
+	if ($res['token'] != "" ) {
 
-		$token= $res['registrationID'];
+		$token= $res['token'];
 
 		$data = [
 			'message' => [
@@ -131,13 +131,13 @@ function master2user ( int $idutente , string $testo , mysqli $db) {
 
 function user2user ( string $nomepg, int $destinatario , string $testo , mysqli $db) {
 
-	$Mysql="SELECT registrationID FROM utente WHERE idutente=$destinatario";
+	$Mysql="SELECT token FROM push_subscriptions WHERE user_id=$destinatario";
 	$Result=mysqli_query($db, $Mysql);
 	$res=mysqli_fetch_array($Result);
 
-	if ($res['registrationID'] != "" ) {
+	if ($res['token'] != "" ) {
 
-		$token= $res['registrationID'];
+		$token= $res['token'];
 
         // echo $token . "<p>" ; 
 
