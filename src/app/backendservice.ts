@@ -5,6 +5,19 @@ export interface LoginResponse {
   user_id: number;
 }
 
+export interface BarcodeResponse {
+  nomeoggetto: string;
+  descrizione: string;
+  esito: Array<Esito>;
+  domanda: string;
+  R1: string;
+  R2: string;
+  esitoSI: Array<Esito>;
+  esitoNO: Array<Esito>;
+  refreshEffetti?: boolean;
+  refresheffetti?: boolean;
+}
+
 
 export class Disciplina {
   IDdisciplina: number = 0;
@@ -47,6 +60,7 @@ export class Oggetto {
     public esitoSI: Array<Esito> = [];
     public esitoNO: Array<Esito> = [];
     public datascan = '';
+    public refreshEffetti = false;
 }
 
 
@@ -92,7 +106,7 @@ export class Backendservice {
     }
 
     barcode(user_id: number, barcode: string) {
-      return this.http.get<any>('https://www.roma-by-night.it/ICU/barcode.php?user_id=' + user_id + '&barcode=' + barcode);
+      return this.http.get<BarcodeResponse>('https://www.roma-by-night.it/ICU/barcode.php?user_id=' + user_id + '&barcode=' + barcode);
     }
 
     getscan(user_id: number) {

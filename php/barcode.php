@@ -85,6 +85,7 @@
 	$ifdomanda=$res8['ifdomanda'];
 	$R1=$res8['r1'];
 	$R2=$res8['r2'];
+	$adddisciplina=$res8['adddisciplina'];
 
 
 
@@ -383,8 +384,75 @@
 				$mysql3 = "INSERT ignore INTO logscanfull  (user_id, IDoggetto, motivo, descrizione)
 					VALUES ('$user_id', '$idx', '$mot', '$descr') ";
 				mysqli_query($db, $mysql3);
+				$mysql3 = "INSERT ignore INTO logscanfull  (user_id, IDoggetto, motivo, descrizione)
+					VALUES ('$user_id', '$altrooggetto', '$mot', '$descr') ";
+				mysqli_query($db, $mysql3);
 			}
 		}
+	}
+
+	// gestione della logica per l'effetto della disciplina incrementata
+
+	$refreshEffetti = false;
+
+
+
+	if ($adddisciplina != '') {
+
+		$idxdisciplina = $adddisciplina;
+		$mysqlnome = "SELECT nomedisciplina from discipline_main where  IDdisciplina = '$idxdisciplina' ";
+		$resultnome = mysqli_query($db, $mysqlnome);
+		$res = mysqli_fetch_array($resultnome);
+		$nomedisciplina = $res['nomedisciplina'];
+
+
+
+		$rigarisp = [
+			'motivo' => 'Disciplina Incrementata',
+			'descrizione' => $nomedisciplina . ' +1',
+			'sino' => ''
+		];
+		$esito[] = $rigarisp;
+
+		$myssql= "select * from effetti where user_id = '$user_id' and IDoggetto = '$idx' ";
+		$result = mysqli_query($db, $myssql);
+		if ($row = mysqli_fetch_assoc($result)) {
+			// già presente nella tabella effetti non faccio nulla
+		} else {
+
+			$mysql3 = "INSERT INTO effetti  (user_id, IDoggetto)
+				VALUES ('$user_id', '$idx') ";
+			mysqli_query($db, $mysql3);
+
+			$mysql3 = "select * from discipline where user_id = '$user_id' and IDdisciplina	 = '$idxdisciplina' ";
+			$result = mysqli_query($db, $mysql3);
+			if ($row = mysqli_fetch_assoc($result)) {
+				$mysqladd = "UPDATE discipline SET livello = livello + 1 WHERE user_id = '$user_id' AND IDdisciplina = '$idxdisciplina' ";
+				mysqli_query($db, $mysqladd);
+			} else {
+				$mysql3 = "INSERT INTO discipline  (user_id, IDdisciplina, livello)
+					VALUES ('$user_id', '$idxdisciplina', 1) ";
+				mysqli_query($db, $mysql3);
+			}
+
+			$mysqllog = "INSERT INTO logscanfull  (user_id, IDoggetto, motivo, descrizione)
+				VALUES ('$user_id', '$idx', 'Disciplina Incrementata', '$nomedisciplina +1') ";
+			mysqli_query($db, $mysqllog);
+
+
+			$messaggio = "Disciplina Incrementata: $nomedisciplina +1 tramite oggetto $nomeoggetto";
+			user2master($user_id,$messaggio, $db );
+			$myssqlx="SELECT nomepg from personaggio where user_id = $user_id";
+			$resultx = mysqli_query($db, $myssqlx);
+			$rowx = mysqli_fetch_assoc($resultx);
+			$xnomepg = mysqli_real_escape_string($db, $rowx['nomepg']);
+			$xmessaggio = mysqli_real_escape_string($db, $messaggio);
+			$Mysql12="INSERT INTO messaggi ( idutente, nomepg, Ora, Testo, Destinatario) VALUES ( $user_id, '$xnomepg', NOW(), '$xmessaggio' , 0) ";
+			mysqli_query($db, $Mysql12);
+
+			$refreshEffetti = true;
+		}
+
 	}
 
 
@@ -398,6 +466,7 @@
 		'domanda' => $domanda,
 		'R1' => $R1,
 		'R2' => $R2,
+		'refreshEffetti' => $refreshEffetti,
 	];
 
 	header("HTTP/1.1 200 OK");

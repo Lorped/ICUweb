@@ -31,24 +31,13 @@ $IDoggetto = $request -> IDoggetto;
 
 if ( isset($postdata) && $IDoggetto != ""  ) {
 
-  $MySql = "DELETE FROM cond_oggetti WHERE IDoggetto = $IDoggetto";
+  $MySql = "DELETE FROM cond_oggetti
+    WHERE IDoggetto = $IDoggetto AND ( risp = 'S' OR risp = 'N' )";
   $Result = mysqli_query($db, $MySql);
 
-  $MySql = "DELETE FROM oggetti WHERE IDoggetto = $IDoggetto";
+  $MySql = "UPDATE oggetti SET domanda = NULL , ifdomanda = 0 , r1 = NULL , r2 = NULL
+    WHERE IDoggetto = $IDoggetto";
   $Result = mysqli_query($db, $MySql);
-
-  $MySql = "DELETE FROM paired WHERE IDoggetto1 = $IDoggetto OR IDoggetto2 = $IDoggetto";
-  $Result = mysqli_query($db, $MySql);
-
-  $MySql = "DELETE FROM logscanogg WHERE IDoggetto = $IDoggetto";
-  $Result = mysqli_query($db, $MySql);
-
-  $MySql = "DELETE FROM logscanfull WHERE IDoggetto = $IDoggetto";
-  $Result = mysqli_query($db, $MySql);
-
-  $MySql = "DELETE FROM effetti WHERE IDoggetto = $IDoggetto";
-  $Result = mysqli_query($db, $MySql);
-
 
       header("HTTP/1.1 200 OK");
 

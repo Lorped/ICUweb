@@ -18,35 +18,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
   exit(0);
 }
 
-require_once __DIR__ . '/db2.inc.php'; //MYSQL//
+require_once __DIR__ . ('/db2.inc.php'); //MYSQLI//
 
 
 $postdata = file_get_contents("php://input");
 $request = json_decode($postdata);
 
-$IDoggetto = $request -> IDoggetto;
+$IDoggetto1 = $request -> IDoggetto1;
+$IDoggetto2 = $request -> IDoggetto2;
+$descrizionePaired = mysqli_real_escape_string($db, $request -> descrizionePaired);
 
 
 
+if ( isset($postdata) && $IDoggetto1 != "" && $IDoggetto2 != ""  ) {
 
-if ( isset($postdata) && $IDoggetto != ""  ) {
-
-  $MySql = "DELETE FROM cond_oggetti WHERE IDoggetto = $IDoggetto";
-  $Result = mysqli_query($db, $MySql);
-
-  $MySql = "DELETE FROM oggetti WHERE IDoggetto = $IDoggetto";
-  $Result = mysqli_query($db, $MySql);
-
-  $MySql = "DELETE FROM paired WHERE IDoggetto1 = $IDoggetto OR IDoggetto2 = $IDoggetto";
-  $Result = mysqli_query($db, $MySql);
-
-  $MySql = "DELETE FROM logscanogg WHERE IDoggetto = $IDoggetto";
-  $Result = mysqli_query($db, $MySql);
-
-  $MySql = "DELETE FROM logscanfull WHERE IDoggetto = $IDoggetto";
-  $Result = mysqli_query($db, $MySql);
-
-  $MySql = "DELETE FROM effetti WHERE IDoggetto = $IDoggetto";
+  $MySql = "INSERT INTO paired (IDoggetto1, IDoggetto2, Paired) VALUES ($IDoggetto1, $IDoggetto2, '$descrizionePaired')";
   $Result = mysqli_query($db, $MySql);
 
 
@@ -60,6 +46,7 @@ if ( isset($postdata) && $IDoggetto != ""  ) {
 
 } else {
 	header("HTTP/1.1 401 Unauthorized");
+
 }
 
 

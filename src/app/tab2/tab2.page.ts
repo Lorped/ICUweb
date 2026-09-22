@@ -5,7 +5,7 @@ import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton,
 import { LoadingController, Platform } from '@ionic/angular';
 import jsQR from 'jsqr';
 //import { Router } from '@angular/router';
-import { Backendservice, Personaggio, Oggetto } from '../backendservice';
+import { Backendservice, Personaggio, Oggetto, BarcodeResponse } from '../backendservice';
 import { IonModal, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonList, IonItem, IonLabel, IonText } from '@ionic/angular';
 
 @Component({
@@ -44,6 +44,7 @@ export class Tab2Page implements AfterViewInit, OnDestroy {
   rispostaselezionata = '';
   isModalOpen = false;
   oldscan: Array<Oggetto> = [];
+  private scanHistoryLoaded = false;
 
   constructor() {
     const isStandaloneMode = (): boolean => 
@@ -52,11 +53,6 @@ export class Tab2Page implements AfterViewInit, OnDestroy {
     if (this.platform.is('ios') && isStandaloneMode()) {
       console.log ("I'm an iOS PWA!!")
     }
-    this.backendservice.getscan(this.personaggio.user_id).subscribe((data) => {
-      this.oldscan = data;
-      // senza zone.js (polyfills vuoto) serve forzare il change detection
-      this.cdr.detectChanges();
-    });
   }
 
   ngAfterViewInit() {
@@ -200,10 +196,10 @@ export class Tab2Page implements AfterViewInit, OnDestroy {
 
     this.scanResult = value;
     await this.stopScan();
-    console.log(`Scanned QR code: ${value}`);
-     //alert(`Scanned QR code: ${value}`);
+    // console.log(`Scanned QR code: ${value}`);
+    // alert(`Scanned QR code: ${value}`);
 
-    this.backendservice.barcode(this.personaggio.user_id, this.scanResult).subscribe((data) => {
+    this.backendservice.barcode(this.personaggio.user_id, this.scanResult).subscribe((data: BarcodeResponse) => {
       //alert(`data: ${JSON.stringify(data)}`);
       
       // console.log(data);
@@ -216,6 +212,18 @@ export class Tab2Page implements AfterViewInit, OnDestroy {
       this.oggetto.R2 = data.R2;
       this.oggetto.esitoSI = data.esitoSI;
       this.oggetto.esitoNO = data.esitoNO;  
+
+      if (data.refreshEffetti === true || data.refresheffetti === true) {
+        this.backendservice.getPersonaggio(this.personaggio.user_id).subscribe({
+          next: (personaggio) => {
+            Object.assign(this.personaggio, personaggio);
+            this.cdr.detectChanges();
+          },
+          error: (error) => {
+            console.error('Error refreshing personaggio:', error);
+          }
+        });
+      }
 
       this.giarisposto = false;
       this.rispostaselezionata = '';
@@ -241,10 +249,7 @@ export class Tab2Page implements AfterViewInit, OnDestroy {
 
   cancel() {
     this.isModalOpen = false;
-    this.backendservice.getscan(this.personaggio.user_id).subscribe((data) => {
-      this.oldscan = data;
-      this.cdr.detectChanges();
-    });
+    this.loadScanHistory(true);
   }
 
 
@@ -256,8 +261,17 @@ export class Tab2Page implements AfterViewInit, OnDestroy {
   }
 
   ionViewWillEnter() {
+    this.loadScanHistory();
+  }
+
+  private loadScanHistory(force = false) {
+    if (this.scanHistoryLoaded && !force) {
+      return;
+    }
+
     this.backendservice.getscan(this.personaggio.user_id).subscribe((data) => {
       this.oldscan = data;
+      this.scanHistoryLoaded = true;
       this.cdr.detectChanges();
     });
   }

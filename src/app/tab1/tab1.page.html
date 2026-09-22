@@ -30,7 +30,7 @@
         <ion-row>
           <ion-col size="2" >Attributi</ion-col>
           <ion-col size="10" style="color:#FF0000;">
-            @for (attr of this.personaggio['attributi']; track attr) {
+            @for (attr of personaggio['attributi']; track attr.IDskill) {
               {{ attr.nomeskill }}
             }
           </ion-col>
@@ -47,7 +47,7 @@
       <ion-col ><hr/></ion-col>
     </ion-row>
 
-  @for (desc of this.personaggio['discipline']; track desc) {
+  @for (desc of personaggio['discipline']; track desc.IDdisciplina) {
   <ion-row>
       <ion-col size="8">{{ desc.nomedisciplina }}</ion-col>
       <ion-col style="text-align: right;">
@@ -68,7 +68,7 @@
 
 
   <ion-accordion-group>
-    @for ( sk of this.personaggio.skills; track sk) {
+    @for ( sk of personaggio.skills; track sk.IDskill) {
     <ion-accordion value="{{ sk.nomeskill }}">
       <ion-item slot="header" color="light">
 
@@ -81,7 +81,7 @@
         </div>
       </ion-label>
     </ion-item>
-    @for (ssk of sk.subskills; track ssk; let ix = $index) {
+    @for (ssk of sk.subskills; track ssk.IDskill) {
     <div class="ion-padding" slot="content" style="display: flex; justify-content: space-between;"> 
       
         -- {{ ssk.nomeskill }}
@@ -101,7 +101,7 @@
     <ion-item slot="header" color="light">
       <ion-label style="display: flex; justify-content: space-between;">Altri skill</ion-label>
     </ion-item>
-    @for (sk of personaggio.otherskills; track sk; let ix = $index) {
+    @for (sk of personaggio.otherskills; track sk.IDskill) {
       <div class="ion-padding" slot="content" style="display: flex; justify-content: space-between;">       
           {{ sk.nomeskill }}
           <div class="ion-text-end">

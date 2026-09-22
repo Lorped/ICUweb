@@ -39,7 +39,7 @@
     "@angular/cli": "22.1.7",
     "@angular/compiler-cli": "22.1.6",
     "@angular/language-service": "22.1.6",
-    "@capacitor/cli": "8.5.1",
+    "@capacitor/cli": "^8.4.3",
     "@ionic/angular-toolkit": "^13.0.0",
     "angular-eslint": "^22.5.0",
     "eslint": "^10.10.0",

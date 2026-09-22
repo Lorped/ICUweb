@@ -14,6 +14,7 @@ export class Tab3Page implements OnInit {
   constructor() { }
 
   ngOnInit() {
+    console.log('Tab3Page initialized');
   }
 
 }

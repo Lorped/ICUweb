@@ -54,9 +54,6 @@ export class TabsPage implements OnInit {
   private router = inject(Router);
   paletteToggle = false;
 
-  constructor() {
-      addIcons({logOutOutline,personOutline,contractOutline,keypadOutline});}
-
   ngOnInit() {
     let savedDarkMode = window.localStorage.getItem('ICUdarkmode');
     if (savedDarkMode === null) {

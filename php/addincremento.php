@@ -18,35 +18,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
   exit(0);
 }
 
-require_once __DIR__ . '/db2.inc.php'; //MYSQL//
+require_once __DIR__ . ('/db2.inc.php'); //MYSQLI//
 
 
 $postdata = file_get_contents("php://input");
 $request = json_decode($postdata);
 
 $IDoggetto = $request -> IDoggetto;
+$newincremento = $request -> newincremento;
 
 
 
+if ( isset($postdata) && $IDoggetto != "" && $newincremento != ""  ) {
 
-if ( isset($postdata) && $IDoggetto != ""  ) {
-
-  $MySql = "DELETE FROM cond_oggetti WHERE IDoggetto = $IDoggetto";
-  $Result = mysqli_query($db, $MySql);
-
-  $MySql = "DELETE FROM oggetti WHERE IDoggetto = $IDoggetto";
-  $Result = mysqli_query($db, $MySql);
-
-  $MySql = "DELETE FROM paired WHERE IDoggetto1 = $IDoggetto OR IDoggetto2 = $IDoggetto";
-  $Result = mysqli_query($db, $MySql);
-
-  $MySql = "DELETE FROM logscanogg WHERE IDoggetto = $IDoggetto";
-  $Result = mysqli_query($db, $MySql);
-
-  $MySql = "DELETE FROM logscanfull WHERE IDoggetto = $IDoggetto";
-  $Result = mysqli_query($db, $MySql);
-
-  $MySql = "DELETE FROM effetti WHERE IDoggetto = $IDoggetto";
+  $MySql = "UPDATE oggetti SET adddisciplina = $newincremento WHERE IDoggetto = $IDoggetto";
   $Result = mysqli_query($db, $MySql);
 
 
@@ -60,6 +45,7 @@ if ( isset($postdata) && $IDoggetto != ""  ) {
 
 } else {
 	header("HTTP/1.1 401 Unauthorized");
+
 }
 
 
