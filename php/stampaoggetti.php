@@ -131,9 +131,14 @@
 
 
 
-		$Mysql="SELECT * FROM oggetti";
+		$Mysql="SELECT oggetti.*, prestampa.quantita FROM oggetti
+			INNER JOIN prestampa ON prestampa.idoggetto = oggetti.IDoggetto";
 		$Result=mysqli_query($db, $Mysql);
 		while ($res=mysqli_fetch_array($Result)) {
+			$quantita = $res['quantita'];
+
+		for ($i=0; $i<$quantita; $i++) {
+
 
 
 			$text=(string)$res['barcode'];
@@ -178,7 +183,9 @@
 				</div>
 			</div>
 <?php
-			}
+
+		}
+	}
 ?>
 
 	</div>
