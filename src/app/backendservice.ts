@@ -85,6 +85,12 @@ export class Personaggio {
   attributi: Otherskill[] = [];  //array degli attributi del personaggio
 }
 
+export class messaggi {
+	nomepg = '';
+	Ora: string = '';
+	Testo: string = '';
+}
+
 
 @Injectable({
   providedIn: 'root'
@@ -111,6 +117,10 @@ export class Backendservice {
 
     getscan(user_id: number) {
       return this.http.get<any>('https://www.roma-by-night.it/ICU/getscan.php?user_id=' + user_id);
+    }
+
+    getmessaggi(user_id: number) {
+      return this.http.get<any>('https://www.roma-by-night.it/ICU/getmessaggi.php?user_id=' + user_id);
     }
 
 

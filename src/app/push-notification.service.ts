@@ -1,4 +1,5 @@
 import { Injectable, inject } from '@angular/core';
+import { Subject } from 'rxjs';
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, isSupported, onMessage } from 'firebase/messaging';
 import { firebaseConfig } from '../environments/environment';
@@ -9,6 +10,10 @@ import { Backendservice } from './backendservice';
 })
 export class PushNotificationService {
   private backendService = inject(Backendservice);
+
+  private messageReceived = new Subject<any>();
+  // emette ad ogni notifica push ricevuta in foreground
+  message$ = this.messageReceived.asObservable();
 
   async setup(user_id: number): Promise<void> {
     try {
@@ -38,6 +43,7 @@ export class PushNotificationService {
       // Notifiche ricevute mentre l'app è in primo piano
       onMessage(messaging, (payload) => {
         console.log('Notifica push ricevuta in foreground', payload);
+        this.messageReceived.next(payload);
       });
     } catch (error) {
       console.error('Impossibile configurare le notifiche push', error);
