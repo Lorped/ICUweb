@@ -7,3 +7,16 @@ video {
     -moz-user-select: text !important;
     -ms-user-select: text !important;
 }
+
+ion-card-header {
+  display: flex;
+  flex-direction: column;
+}
+
+ion-card-header ion-card-title {
+  order: 0;
+}
+
+ion-card-header ion-card-subtitle {
+  order: 1;
+}

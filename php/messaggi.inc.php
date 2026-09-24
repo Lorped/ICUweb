@@ -97,7 +97,7 @@ function master2user ( int $idutente , string $testo , mysqli $db) {
 		$data = [
 			'message' => [
 				"notification"=> [
-					"title" => "NOTTURNA",
+					"title" => "Ivory Cross University",
 					"body" => $testo,
 	
 					// 'sound' => 'default',
