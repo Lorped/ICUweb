@@ -31,31 +31,27 @@ require_once __DIR__ . '/db2.inc.php';  //MYSQLI //
 
 		$idx = $res['IDoggetto'];
 		$user_id = $res['user_id'];
-		$datascan = $res['datascan'];
 
-		$Mysql9="SELECT * FROM paired WHERE IDoggetto1 = '$idx' or IDoggetto2 = '$idx' ";
-		$Result9=mysqli_query($db, $Mysql9);
-			if ( $res9=mysqli_fetch_array($Result9) ) {
-				if ($res9['IDoggetto1'] == $idx ) {	
-				$altrooggetto=$res9['IDoggetto2'];
-			} else {
-				$altrooggetto=$res9['IDoggetto1'];
+		$Mysql9 = "SELECT CASE WHEN IDoggetto1 = $idx THEN IDoggetto2 ELSE IDoggetto1 END AS altroID
+			FROM paired
+			WHERE IDoggetto1 = $idx OR IDoggetto2 = $idx
+			LIMIT 1";
+		$Result9 = mysqli_query($db, $Mysql9);
+		if ( $res9 = mysqli_fetch_array($Result9, MYSQLI_ASSOC) ) {
+			$altrooggetto = $res9['altroID'];
+			$mysql10 = "SELECT oggetti.nomeoggetto FROM logscanpaired AS scansione_corrente
+				INNER JOIN logscanpaired AS scansione_altro
+				ON scansione_altro.IDoggetto = $altrooggetto
+				AND scansione_altro.user_id = scansione_corrente.user_id
+				AND scansione_altro.datascan BETWEEN DATE_SUB(scansione_corrente.datascan, INTERVAL 3 MINUTE)
+				AND DATE_ADD(scansione_corrente.datascan, INTERVAL 3 MINUTE)
+				INNER JOIN oggetti ON scansione_altro.IDoggetto = oggetti.IDoggetto
+				WHERE scansione_corrente.IDoggetto = $idx AND scansione_corrente.user_id = $user_id
+				LIMIT 1";
+			$Result10 = mysqli_query($db, $mysql10);
+			if ( $res10 = mysqli_fetch_array($Result10, MYSQLI_ASSOC) ) {
+				$res['paired_nomeoggetto'] = $res10['nomeoggetto'];
 			}
-			// altrooggetto è stato scansionato da poco ?
-			$MySql6 = "SELECT * FROM logscanpaired WHERE
-				IDoggetto = $altrooggetto AND user_id = $user_id AND ABS(TIMESTAMPDIFF(MINUTE, logscanpaired.datascan, '$datascan')) <= 3 ";
-			$Result6 = mysqli_query($db, $MySql6);
-			if ( $res6 = mysqli_fetch_array($Result6) ) {
-				// paired object has been scanned recently
-				$mysql10 = "SELECT oggetti.nomeoggetto FROM logscanpaired 
-					LEFT JOIN oggetti ON logscanpaired.IDoggetto = oggetti.IDoggetto
-					WHERE logscanpaired.IDoggetto = $altrooggetto AND logscanpaired.user_id = $user_id AND ABS(TIMESTAMPDIFF(MINUTE, logscanpaired.datascan, '$datascan')) <= 3 ";
-				$Result10 = mysqli_query($db, $mysql10);
-				if ( $res10 = mysqli_fetch_array($Result10) ) {
-					$res['paired_nomeoggetto'] = $res10['nomeoggetto'];
-				}
-			}
-
 		}
 
 		$logscan[] = $res;

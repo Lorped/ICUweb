@@ -37,26 +37,35 @@ function user2master ( int $idutente, string $testo, mysqli $db ) {
 		$nomepg=$res['nomepg'];
 	}
 
-	$data = [
-        'message' => [
-            "notification"=> [
-                "title" => "NOTTURNA",
-                "body" => $nomepg." ".$testo,
+	$Mysql="SELECT token FROM push_subscriptions WHERE user_id=0";
+	$Result=mysqli_query($db, $Mysql);
+	$res=mysqli_fetch_array($Result);
 
-                // 'sound' => 'default',
-				// 'notification_priority' => '2'
-            ],
-            "android" => [
-                "notification" => [
-                    "channel_id" => "PushPluginChannel"
-                ]
-            ],
-            //'token' => $token,
-            'topic' => 'master' 
-        ]
-    ];
+	if ($res['token'] != "" ) {
+		$token= $res['token'];
 
-	pushmsg ($data);
+		$data = [
+			'message' => [
+				"notification"=> [
+					"title" => "Ivory Cross University",
+					"body" => $nomepg." ".$testo,
+
+					// 'sound' => 'default',
+					// 'notification_priority' => '2'
+				],
+				"android" => [
+					"notification" => [
+						"channel_id" => "PushPluginChannel"
+					]
+				],
+				'token' => $token,
+				//'topic' => 'master' 
+			]
+		];
+
+		pushmsg ($data);
+	}
+	
 }
 
 
