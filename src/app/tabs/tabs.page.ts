@@ -1,7 +1,7 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Personaggio } from '../backendservice';
+import { Personaggio, Backendservice } from '../backendservice';
 import { IonContent,
   IonTabBar,
   IonTabButton,
@@ -13,22 +13,28 @@ import { IonContent,
   IonIcon,
   IonItem,
   IonButton,
+  IonInput,
+  IonButtons,
   IonHeader,
+  IonModal,
   IonToolbar,
   IonTitle,
   IonLabel,
+  IonText,
+  IonToast,
  } from "@ionic/angular";
 
 import { addIcons } from 'ionicons';
-import { contractOutline, keypadOutline, logOutOutline, personOutline } from 'ionicons/icons';
-addIcons({ contractOutline, keypadOutline, logOutOutline, personOutline });
+import { contractOutline, keypadOutline, logOutOutline, personOutline, logoAppflow } from 'ionicons/icons';
+
+addIcons({ contractOutline, keypadOutline, logOutOutline, personOutline, logoAppflow });
 
 
 @Component({
   selector: 'app-tabs',
   templateUrl: './tabs.page.html',
   styleUrls: ['./tabs.page.scss'],
-  imports: [
+  imports: [IonText, 
     FormsModule,
     IonContent,
     IonTabBar,
@@ -40,19 +46,31 @@ addIcons({ contractOutline, keypadOutline, logOutOutline, personOutline });
     IonIcon,
     IonItem,
     IonButton,
+    IonInput,
+    IonButtons,
     IonHeader,
+    IonModal,
     IonToolbar,
     IonTitle,
     IonList,
-    IonLabel
+    IonLabel,
+    IonToast,
   ],
   standalone: true,
 })
 export class TabsPage implements OnInit {
 
-  // private personaggio = inject(Personaggio);
+  private backendservice = inject(Backendservice);
+  private personaggio = inject(Personaggio);
   private router = inject(Router);
   paletteToggle = false;
+  isArbitroModalOpen = signal(false);
+  messaggioArbitro = '';
+  isSendingArbitro = false;
+  messaggioArbitroError = '';
+  isArbitroErrorOpen = false;
+  private changeDetectorRef = inject(ChangeDetectorRef);
+  
 
   ngOnInit() {
     let savedDarkMode = window.localStorage.getItem('ICUdarkmode');
@@ -111,6 +129,53 @@ export class TabsPage implements OnInit {
     this.router.navigate(['/login']);
   }
 
+  openArbitro() {
+    this.isArbitroModalOpen.set(true);
+  }
 
+  closeArbitro() {
+    this.isArbitroModalOpen.set(false);
+  }
+
+  setArbitroErrorOpen(isOpen: boolean) {
+    this.isArbitroErrorOpen = isOpen;
+  }
+
+  mandaArbitro() {
+    if (this.isSendingArbitro) {
+      return;
+    }
+
+    const messaggio = this.messaggioArbitro.trim();
+    if (!messaggio) {
+      return;
+    }
+
+    this.isSendingArbitro = true;
+    this.changeDetectorRef.markForCheck();
+
+    this.backendservice
+      .msgtomaster(
+        this.personaggio.user_id,
+        `Richiesta di intervento da parte di un Arbitro in Nero. ${messaggio}`
+      )
+      .subscribe({
+        next: () => {
+          this.isSendingArbitro = false;
+          this.isArbitroModalOpen.set(false);
+          this.messaggioArbitro = '';
+          this.backendservice.notificaMessaggiAggiornati();
+          this.changeDetectorRef.markForCheck();
+        },
+        error: (error) => {
+          this.isSendingArbitro = false;
+          this.messaggioArbitroError =
+            'Invio non riuscito. Riprova mantenendo il messaggio.';
+          this.isArbitroErrorOpen = true;
+          this.changeDetectorRef.markForCheck();
+          console.error('Errore durante invio messaggio', error);
+        },
+      });
+  }
 
 }

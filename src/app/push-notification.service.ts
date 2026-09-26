@@ -28,10 +28,18 @@ export class PushNotificationService {
         return;
       }
 
-      const registration = await navigator.serviceWorker.register('firebase-messaging-sw.js');
-
       const app = initializeApp(firebaseConfig);
       const messaging = getMessaging(app);
+
+      onMessage(messaging, (payload) => {
+        //alert('Notifica push ricevuta in foreground: ' + JSON.stringify(payload));
+        //console.log('Notifica push ricevuta in foreground', payload);
+        this.messageReceived.next(payload);
+      });
+
+      const registration = await navigator.serviceWorker.register('firebase-messaging-sw.js', {
+        scope: '/firebase-messaging-scope/',
+      });
 
       const token = await getToken(messaging, {
         vapidKey: firebaseConfig.vapidKey,
@@ -39,12 +47,6 @@ export class PushNotificationService {
       });
 
       this.saveToken(user_id, token);
-
-      // Notifiche ricevute mentre l'app è in primo piano
-      onMessage(messaging, (payload) => {
-        console.log('Notifica push ricevuta in foreground', payload);
-        this.messageReceived.next(payload);
-      });
     } catch (error) {
       console.error('Impossibile configurare le notifiche push', error);
     }

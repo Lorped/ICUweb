@@ -9,7 +9,12 @@
     <ion-list [inset]="true">
       <ion-item>
         <ion-toggle [(ngModel)]="paletteToggle" (ionChange)="toggleChange($event)" justify="space-between">Dark Mode</ion-toggle>
-      </ion-item>    
+      </ion-item>
+      <ion-item>
+        <ion-icon name="logo-appflow" size="small"></ion-icon>
+        <ion-button  fill="clear" color="dark" type="submit" (click)="openArbitro()">Arbitro in Nero </ion-button>
+      </ion-item>
+    
       <ion-item>
         <ion-icon name="log-out-outline" size="small"></ion-icon>
           <ion-menu-toggle>
@@ -48,5 +53,35 @@
   </ion-tabs>
 
 </ion-content>
+
+  <ion-modal [isOpen]="isArbitroModalOpen()" (didDismiss)="closeArbitro()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar color="medium">
+          <ion-title>Arbitro in Nero</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeArbitro()">Chiudi</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+       <ion-content>
+          <p class="ion-padding-horizontal">Stai per richiamare l'attenzione di un Arbitro in Nero.<ion-text color="danger">Sei sicuro di voler procedere?</ion-text></p>
+          <p class="ion-padding-horizontal">L'Arbitro in Nero riceverà un messaggio con il tuo nome e quello del tuo PG, e potrà contattarti in privato per risolvere la questione.</p>
+          <p class="ion-padding-horizontal">Indica dove ti trovi ed eventuali altri dettagli.</p>
+          <ion-item>
+            <ion-input placeholder="Messaggio per l'Arbitro in Nero" [(ngModel)]="messaggioArbitro" name="messaggioArbitro" [disabled]="isSendingArbitro"></ion-input >
+          </ion-item>
+          <ion-button color="danger" shape="round" type="submit" expand="full" (click)="mandaArbitro()" [disabled]="isSendingArbitro || messaggioArbitro.trim()===''">Invia richiesta</ion-button>
+        </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <ion-toast
+    [isOpen]="isArbitroErrorOpen"
+    [message]="messaggioArbitroError"
+    position="middle"
+    duration="5000"
+    (didDismiss)="setArbitroErrorOpen(false)">
+  </ion-toast>
 
 </div>

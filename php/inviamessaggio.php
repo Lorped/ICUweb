@@ -28,15 +28,12 @@ require_once __DIR__ . '/messaggi.inc.php';
 
 
 	foreach ($destinatari as $user_id) {
-		master2user($user_id, $messaggio ,  $db);
-
-
-		$messaggio = mysqli_real_escape_string($db, $messaggio);
-
-
-		$MySql = "INSERT INTO messaggi (ora , destinatario, testo) VALUES (NOW(), $user_id, '$messaggio')";
+		$xmessaggio = mysqli_real_escape_string($db, $messaggio);
+		$MySql = "INSERT INTO messaggi (ora , destinatario, testo) VALUES (NOW(), $user_id, '$xmessaggio')";
 		$Result=mysqli_query($db, $MySql);
-	
+		if ($Result) {
+			master2user($user_id, $messaggio, $db);
+		}
 	}
 
 	

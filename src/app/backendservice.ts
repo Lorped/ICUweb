@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Subject } from 'rxjs';
 
 export interface LoginResponse {
   user_id: number;
@@ -97,7 +98,14 @@ export class messaggi {
 })
 export class Backendservice {
     private http = inject(HttpClient);
+    private readonly messaggiRefreshSubject = new Subject<void>();
+    readonly messaggiRefresh$ = this.messaggiRefreshSubject.asObservable();
+
     constructor() {}
+
+    notificaMessaggiAggiornati() {
+      this.messaggiRefreshSubject.next();
+    }
 
     login (nomeutente: string, password: string) {
       return this.http.get<LoginResponse>(`https://www.roma-by-night.it/ICU/login.php?nomeutente=${nomeutente}&password=${password}`);
@@ -120,7 +128,14 @@ export class Backendservice {
     }
 
     getmessaggi(user_id: number) {
-      return this.http.get<any>('https://www.roma-by-night.it/ICU/getmessaggi.php?user_id=' + user_id);
+      return this.http.get<any>('https://www.roma-by-night.it/ICU/getmessaggi.php?user_id=' + user_id + '&refresh=' + Date.now());
+    }
+
+    msgtomaster(user_id: number, messaggio: string) {
+      return this.http.post(`https://www.roma-by-night.it/ICU/msgtomaster.php`, {
+        idutente: user_id,
+        messaggio: messaggio
+      });
     }
 
 

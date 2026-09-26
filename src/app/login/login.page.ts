@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { PushNotificationService } from '../push-notification.service';
 import {
   IonButton,
@@ -46,7 +46,7 @@ import { Router } from '@angular/router';
     IonToolbar,
   ],
 })
-export class LoginPage implements OnInit {
+export class LoginPage {
   private loadingCtrl = inject(LoadingController);
   private backendService = inject(Backendservice);
   private personaggio = inject(Personaggio);
@@ -56,7 +56,7 @@ export class LoginPage implements OnInit {
   saveme = {
     checked: false,
   };
-  isDarkMode = false;
+  isDarkMode = signal(false);
 
   loginForm = new FormGroup({
     loginName: new FormControl('', { nonNullable: true, validators: Validators.required }),
@@ -75,7 +75,7 @@ export class LoginPage implements OnInit {
     }
   }
 
-  ngOnInit() {
+  ionViewWillEnter() {
     this.applyAppPalette();
   }
   
@@ -86,8 +86,9 @@ export class LoginPage implements OnInit {
       window.localStorage.setItem('ICUdarkmode', savedDarkMode);
     }
 
-    this.isDarkMode = savedDarkMode === 'true';
-    document.documentElement.classList.toggle('ion-palette-dark', this.isDarkMode);
+    const isDarkMode = savedDarkMode === 'true';
+    this.isDarkMode.set(isDarkMode);
+    document.documentElement.classList.toggle('ion-palette-dark', isDarkMode);
     document.documentElement.classList.remove('ion-palette-light');
   }
 
