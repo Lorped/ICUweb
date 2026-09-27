@@ -1,18 +1,36 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, IonButton, IonRow, IonCol } from '@ionic/angular';
-import { LoadingController, Platform } from '@ionic/angular';
+import {
+  IonButton,
+  IonButtons,
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonCardSubtitle,
+  IonCardTitle,
+  IonCol,
+  IonContent,
+  IonHeader,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonMenuButton,
+  IonModal,
+  IonRow,
+  IonText,
+  IonTitle,
+  IonToolbar,
+  LoadingController,
+  Platform,
+} from '@ionic/angular';
 import jsQR from 'jsqr';
 //import { Router } from '@angular/router';
 import { Backendservice, Personaggio, Oggetto, BarcodeResponse } from '../backendservice';
-import { IonModal, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonList, IonItem, IonLabel, IonText } from '@ionic/angular';
 
 @Component({
   selector: 'app-tab2',
   templateUrl: './tab2.page.html',
   styleUrls: ['./tab2.page.scss'],
-  imports: [IonButton, IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, IonRow, IonCol, CommonModule, FormsModule, IonModal, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonList, IonItem, IonLabel, IonText]
+  imports: [IonButton, IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, IonRow, IonCol, IonModal, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonList, IonItem, IonLabel, IonText]
 })
 export class Tab2Page implements AfterViewInit, OnDestroy {
   @ViewChild('video') video?: ElementRef<HTMLVideoElement>;
