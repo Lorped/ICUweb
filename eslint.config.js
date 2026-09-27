@@ -6,9 +6,16 @@ module.exports = tseslint.config(
   {
     files: ["**/*.ts"],
     ignores: ["projects/**/*"],
-    extends: [...angular.configs.tsRecommended],
+    extends: [
+      ...tseslint.configs.recommended,
+      ...angular.configs.tsRecommended,
+    ],
     processor: angular.processInlineTemplates,
     rules: {
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@angular-eslint/prefer-standalone": "warn",
+      "@angular-eslint/prefer-inject": "warn",
+      "@angular-eslint/prefer-on-push-component-change-detection": "warn",
       "@angular-eslint/component-class-suffix": [
         "error",
         { suffixes: ["Page", "Component"] },
@@ -25,7 +32,13 @@ module.exports = tseslint.config(
   },
   {
     files: ["**/*.html"],
-    extends: [...angular.configs.templateRecommended],
-    rules: {},
+    extends: [
+      ...angular.configs.templateRecommended,
+      ...angular.configs.templateAccessibility,
+    ],
+    rules: {
+      "@angular-eslint/template/eqeqeq": "warn",
+      "@angular-eslint/template/prefer-control-flow": "warn",
+    },
   }
 );

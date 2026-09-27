@@ -5,14 +5,14 @@ import { Pipe, PipeTransform } from '@angular/core';
   standalone: true
 })
 export class TimesPipe implements PipeTransform {
-  transform(value: number): any {
-    const iterable: any = {};
-    iterable[Symbol.iterator] = function* () {
-      let n = 0;
-      while (n < value) {
-        yield ++n;
-      }
+  transform(value: number): Iterable<number> {
+    return {
+      [Symbol.iterator]: function* () {
+        let n = 0;
+        while (n < value) {
+          yield ++n;
+        }
+      },
     };
-    return iterable;
   }
 }
