@@ -92,6 +92,10 @@ export class messaggi {
 	Testo: string = '';
 }
 
+export interface MsgResponse {
+    messaggi: messaggi[];  //array dei messaggi ricevuti
+}
+
 
 @Injectable({
   providedIn: 'root'
@@ -124,11 +128,11 @@ export class Backendservice {
     }
 
     getscan(user_id: number) {
-      return this.http.get<any>('https://www.roma-by-night.it/ICU/getscan.php?user_id=' + user_id);
+      return this.http.get<Array<Oggetto>>('https://www.roma-by-night.it/ICU/getscan.php?user_id=' + user_id);
     }
 
     getmessaggi(user_id: number) {
-      return this.http.get<any>('https://www.roma-by-night.it/ICU/getmessaggi.php?user_id=' + user_id + '&refresh=' + Date.now());
+      return this.http.get<MsgResponse>('https://www.roma-by-night.it/ICU/getmessaggi.php?user_id=' + user_id + '&refresh=' + Date.now());
     }
 
     msgtomaster(user_id: number, messaggio: string) {

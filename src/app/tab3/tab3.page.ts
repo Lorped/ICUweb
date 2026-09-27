@@ -18,7 +18,7 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular';
-import { Backendservice, Personaggio } from '../backendservice';
+import { Backendservice, Personaggio, MsgResponse, messaggi } from '../backendservice';
 import { PushNotificationService } from '../push-notification.service';
 
 @Component({
@@ -34,7 +34,7 @@ export class Tab3Page implements OnInit {
   private backendservice = inject(Backendservice);
   private pushNotificationService = inject(PushNotificationService);
   public personaggio = inject(Personaggio);
-  messaggi: any[] = [];
+  messaggi: messaggi[] = [];
 
   constructor() { }
 
@@ -60,7 +60,7 @@ export class Tab3Page implements OnInit {
   }
 
   private caricaMessaggi() {
-    this.backendservice.getmessaggi(this.personaggio.user_id).subscribe((data: any) => {
+    this.backendservice.getmessaggi(this.personaggio.user_id).subscribe((data: MsgResponse) => {
       this.messaggi = data.messaggi;
       this.cdr.detectChanges();
     });
