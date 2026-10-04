@@ -20,7 +20,7 @@ require_once __DIR__ . '/db2.inc.php';  //MYSQLI //
 
 	$IDoggetto = isset($_GET['IDoggetto']) ? intval($_GET['IDoggetto']) : 0;
 
-	$oggetti = [];
+	$fulloggetto = [];
 
 	$MySql = "SELECT IDoggetto, barcode, nomeoggetto, descrizione, fissomobile, ifdomanda, domanda, r1, r2, nomedisciplina as adddisciplina 
 	FROM oggetti 
@@ -122,13 +122,12 @@ require_once __DIR__ . '/db2.inc.php';  //MYSQLI //
 			'descpaired' => $descpaired
 		];
 
-		$oggetti[] = $fulloggetto;
 
 	}
 
 
 	$out = [
-		'oggetti' => $oggetti
+		'oggetto' => $fulloggetto
 	];
 
 	//print_r( $out);

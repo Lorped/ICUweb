@@ -22,19 +22,19 @@ if (!is_array($request) || count($request) === 0) {
 }
 
 mysqli_query($db, 'CREATE TABLE IF NOT EXISTS prestampa (
-  idoggetto INT NOT NULL PRIMARY KEY,
+  IDoggetto INT NOT NULL PRIMARY KEY,
   quantita INT NOT NULL
 )');
 mysqli_query($db, 'DELETE FROM prestampa');
 
-$statement = mysqli_prepare($db, 'INSERT INTO prestampa (idoggetto, quantita) VALUES (?, ?)');
+$statement = mysqli_prepare($db, 'INSERT INTO prestampa (IDoggetto, quantita) VALUES (?, ?)');
 foreach ($request as $riga) {
-  $idoggetto = filter_var($riga->IDoggetto ?? null, FILTER_VALIDATE_INT);
+  $IDoggetto = filter_var($riga->IDoggetto ?? null, FILTER_VALIDATE_INT);
   $quantita = filter_var($riga->quantita ?? null, FILTER_VALIDATE_INT);
-  if ($idoggetto === false || $quantita === false || $quantita < 1 || $quantita > 10) {
+  if ($IDoggetto === false || $quantita === false || $quantita < 1 || $quantita > 10) {
     continue;
   }
-  mysqli_stmt_bind_param($statement, 'ii', $idoggetto, $quantita);
+  mysqli_stmt_bind_param($statement, 'ii', $IDoggetto, $quantita);
   mysqli_stmt_execute($statement);
 }
 mysqli_stmt_close($statement);

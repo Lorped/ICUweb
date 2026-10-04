@@ -132,7 +132,7 @@
 
 
 		$Mysql="SELECT oggetti.*, prestampa.quantita FROM oggetti
-			INNER JOIN prestampa ON prestampa.idoggetto = oggetti.IDoggetto";
+			INNER JOIN prestampa ON prestampa.IDoggetto = oggetti.IDoggetto";
 		$Result=mysqli_query($db, $Mysql);
 		while ($res=mysqli_fetch_array($Result)) {
 			$quantita = $res['quantita'];

@@ -11,7 +11,7 @@ import { Backendservice } from './backendservice';
 export class PushNotificationService {
   private backendService = inject(Backendservice);
 
-  private messageReceived = new Subject<any>();
+  private messageReceived = new Subject();
   // emette ad ogni notifica push ricevuta in foreground
   message$ = this.messageReceived.asObservable();
 
