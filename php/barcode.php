@@ -152,7 +152,7 @@
 
 	
 
-	$Mysql="SELECT tipocond, tabcond, valcond, descrX, risp, subskill  FROM oggetti LEFT JOIN cond_oggetti ON oggetti.IDoggetto = cond_oggetti.IDoggetto WHERE barcode='$barcode' ORDER BY cond_oggetti.valcond ASC ";
+	$Mysql="SELECT tipocond, tabcond, valcond, descrX, risp, cond_oggetti.subskill AS subskill, skill_main.subskill AS parentskill  FROM oggetti LEFT JOIN cond_oggetti ON oggetti.IDoggetto = cond_oggetti.IDoggetto LEFT JOIN skill_main ON skill_main.idskill = cond_oggetti.tabcond AND cond_oggetti.tipocond = 'SS' WHERE barcode='$barcode' ORDER BY cond_oggetti.valcond ASC ";
 	$Result=mysqli_query($db, $Mysql);
 	if (mysqli_errno($db)) die ( mysqli_errno($db).": ".mysqli_error($db) ."+".$Mysql);
 
@@ -264,7 +264,9 @@
 	
 
 
-	// INIZIO SKILL  SPECIFICI
+	// INIZIO SKILL  SPECIFICI + GENERICI
+
+	$genericiAggiunti = [];
 
 
 	foreach ($condizioni as $cond) {
@@ -283,10 +285,10 @@
 
 			if ( $res4=mysqli_fetch_array($Result4)  ) {
 				// HO UN SKILL GENERICO confermato. ESISTE UNA CONDIZIONE Su SKILL SPECIFICO ?
-				$esistesoecifico=false;
+				$specificoSoddisfatto = false;
 				for ( $i=0; $i< count($condizioni); $i++ ) {
 					
-					if ( $condizioni[$i]['tipocond'] == 'SS' && $condizioni[$i]['subskill'] == $ids ) {
+					if ( $condizioni[$i]['tipocond'] == 'SS' && $condizioni[$i]['parentskill'] == $ids ) {
 
 						$specifica = $condizioni[$i]['tabcond'];
 
@@ -297,51 +299,68 @@
 						$Result5=mysqli_query($db, $mysql5);
 
 						if ( $res5=mysqli_fetch_array($Result5)  ) {
-							$esistesoecifico=true;
-
 							// c'è una condizione su skill specifico verificato?
 							if ( $res5['livello'] >= $condizioni[$i]['valcond'] ) {
+								$specificoSoddisfatto = true;
 								$rigarisp = [
 									'motivo' => $res5['nomeskill'],
 									'descrizione' => $condizioni[$i]['descrX'],
 									'sino' => $cond['risp']
 								];
 								$esito[] = $rigarisp;										
-							} else {
-								// allora inserisco solo il generico perchè ho lo skill specifico troppo basso
-								$rigarisp = [
-									'motivo' => $res4['nomeskill'],
-									'descrizione' => $cond['descrX'],
-									'sino' => $cond['risp']
-								];
-								$esito[] = $rigarisp;	
-							}
-						} else {
-							$esistesoecifico=true;
-							// allora inserisco solo il generico perchè non ho lo skill specifico
-							$rigarisp = [
-								'motivo' => $res4['nomeskill'],
-								'descrizione' => $cond['descrX'],
-								'sino' => $cond['risp']
-							];
-							$esito[] = $rigarisp;
-						}
+							} 
+						} 
 					}
 				}
-				//se alla fine non esiste uno skill specifico verificato allora inserisco il generico
-				if ( $esistesoecifico == false ) {
+				// Mostro il generico una volta sola, e solo se nessuno specifico è soddisfatto.
+				if ( !$specificoSoddisfatto && !isset($genericiAggiunti[$ids]) ) {
 					$rigarisp = [
 						'motivo' => $res4['nomeskill'],
 						'descrizione' => $cond['descrX'],
 						'sino' => $cond['risp']
 					];
-					$esito[] = $rigarisp;	
-				}								
+					$esito[] = $rigarisp;
+					$genericiAggiunti[$ids] = true;
+				}									
 
 			}
 		}
 	}
 
+	foreach ($condizioni as $cond) {
+
+		if ($cond['tipocond'] == 'SS') {
+			$condizioneGenericaEsistente = false;
+			foreach ($condizioni as $condizioneGenerica) {
+				if (
+					$condizioneGenerica['tipocond'] == 'S'
+					&& $condizioneGenerica['tabcond'] == $cond['parentskill']
+				) {
+					$condizioneGenericaEsistente = true;
+					break;
+				}
+			}
+
+			if (!$condizioneGenericaEsistente) {
+				$specifica = $cond['tabcond'];
+				$mysql5 = "SELECT * FROM skill_main
+					LEFT JOIN skill ON skill_main.idskill = skill.idskill
+					WHERE skill_main.idskill = $specifica AND user_id = '$user_id' ";
+				$Result5 = mysqli_query($db, $mysql5);
+
+				if ($res5 = mysqli_fetch_array($Result5)) {
+					if ($res5['livello'] >= $cond['valcond']) {
+						$rigarisp = [
+							'motivo' => $res5['nomeskill'],
+							'descrizione' => $cond['descrX'],
+							'sino' => $cond['risp']
+						];
+						$esito[] = $rigarisp;
+					}
+				}
+			}
+		}
+	}
 		
 
 	$esitoSI = [];
@@ -375,19 +394,25 @@
 			mysqli_query($db, $mysql3);
 		}
 	} else {
-		// quello che può succedere è che devo inserire un "paired" ossia "motivo == Accoppiamento"
+		// Cancello i logscanfull esistenti per questo oggetto e li reinserisco
+		$newaccoppiamento = false;
 		foreach ($esito as $riga) {
-			if ( strpos($riga['motivo'], 'Accoppiamento ') === 0 ) {
-				// gestisci il caso specifico di "Accoppiamento" se necessario
-				$mot = mysqli_real_escape_string($db, $riga['motivo']);
-				$descr=mysqli_real_escape_string($db, $riga['descrizione']);
-				$mysql3 = "INSERT ignore INTO logscanfull  (user_id, IDoggetto, motivo, descrizione)
-					VALUES ('$user_id', '$idx', '$mot', '$descr') ";
-				mysqli_query($db, $mysql3);
-				$mysql3 = "INSERT ignore INTO logscanfull  (user_id, IDoggetto, motivo, descrizione)
-					VALUES ('$user_id', '$altrooggetto', '$mot', '$descr') ";
-				mysqli_query($db, $mysql3);
-			}
+			if ( str_starts_with($riga['motivo'], 'Accoppiamento') ) {
+				$newaccoppiamento = true;
+			}	
+		}
+		if ( $newaccoppiamento ) { // cancello anche l'accoppiamento precedente se esiste
+			$mysql4 = "DELETE FROM logscanfull WHERE user_id = '$user_id' AND idoggetto = '$idx'  ";
+		} else {
+			$mysql4 = "DELETE FROM logscanfull WHERE user_id = '$user_id' AND idoggetto = '$idx' and motivo not like 'Accoppiamento%' ";
+		}
+		mysqli_query($db, $mysql4);
+		foreach ($esito as $riga) {
+			$mot = mysqli_real_escape_string($db, $riga['motivo']);
+			$descr=mysqli_real_escape_string($db, $riga['descrizione']);
+			$mysql3 = "INSERT INTO logscanfull  (user_id, idoggetto, motivo, descrizione)
+				VALUES ('$user_id', '$idx', '$mot', '$descr') ";
+			mysqli_query($db, $mysql3);
 		}
 	}
 
