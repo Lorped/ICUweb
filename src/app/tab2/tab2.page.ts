@@ -262,6 +262,17 @@ export class Tab2Page implements AfterViewInit, OnDestroy {
     //console.log('Risposta selezionata:', risposta);
     this.giarisposto = true;
     this.rispostaselezionata = risposta;
+
+    const msg = `ha risposto: ${this.rispostaselezionata} alla domanda ${this.oggetto.domanda} dell'oggetto ${this.oggetto.nomeoggetto}`;
+    this.backendservice.msgtomaster(this.personaggio.user_id, msg).subscribe({
+      next: () => {
+        console.log(`Messaggio inviato con successo`);
+      },
+      error: (error) => {
+        console.log(`Errore nell'invio del messaggio: ${JSON.stringify(error)}`);
+      }
+    });
+    
   }
 
 
