@@ -266,102 +266,66 @@
 
 	// INIZIO SKILL  SPECIFICI + GENERICI
 
-	$genericiAggiunti = [];
-
+	// 1) Specifici: se soddisfatti vengono sempre mostrati
+	$specificiSoddisfatti = [];   // idskill generico => true
 
 	foreach ($condizioni as $cond) {
 
-		if ($cond['tipocond'] == 'S' ){
+		if ($cond['tipocond'] == 'SS') {
 
-		//print_r($cond); 
-		//echo "<br><br>";
+			$specifica = $cond['tabcond'];
+			$mysql5 = "SELECT * FROM skill_main
+				LEFT JOIN skill ON skill_main.idskill = skill.idskill
+				WHERE skill_main.idskill = $specifica AND skill.user_id = '$user_id' ";
+			$Result5 = mysqli_query($db, $mysql5);
 
-			$ids=$cond['tabcond'];
+			if ( $res5 = mysqli_fetch_array($Result5) ) {
+				if ( $res5['livello'] >= $cond['valcond'] ) {
+					$specificiSoddisfatti[$cond['parentskill']] = true;
 
-			$Mysql4="SELECT * FROM skill left join skill_main on skill_main.IDskill=skill.IDskill
-				WHERE skill_main.IDskill = $ids AND skill.user_id = '$user_id' ";
-			$Result4=mysqli_query($db, $Mysql4);
-
-
-			if ( $res4=mysqli_fetch_array($Result4)  ) {
-				// HO UN SKILL GENERICO confermato. ESISTE UNA CONDIZIONE Su SKILL SPECIFICO ?
-				$specificoSoddisfatto = false;
-				for ( $i=0; $i< count($condizioni); $i++ ) {
-					
-					if ( $condizioni[$i]['tipocond'] == 'SS' && $condizioni[$i]['parentskill'] == $ids ) {
-
-						$specifica = $condizioni[$i]['tabcond'];
-
-						$mysql5="SELECT * FROM skill_main 
-							left join skill on skill_main.IDskill = skill.IDskill
-							WHERE skill_main.IDskill =  $specifica  AND skill.user_id = '$user_id' ";
-
-						$Result5=mysqli_query($db, $mysql5);
-
-						if ( $res5=mysqli_fetch_array($Result5)  ) {
-							// c'è una condizione su skill specifico verificato?
-							if ( $res5['livello'] >= $condizioni[$i]['valcond'] ) {
-								$specificoSoddisfatto = true;
-								$rigarisp = [
-									'motivo' => $res5['nomeskill'],
-									'descrizione' => $condizioni[$i]['descrX'],
-									'sino' => $cond['risp']
-								];
-								$esito[] = $rigarisp;										
-							} 
-						} 
+					// risposta: quella del generico collegato, se presente, altrimenti la propria
+					$sino = $cond['risp'];
+					foreach ($condizioni as $condGen) {
+						if ( $condGen['tipocond'] == 'S' && $condGen['tabcond'] == $cond['parentskill'] ) {
+							$sino = $condGen['risp'];
+							break;
+						}
 					}
+
+					$rigarisp = [
+						'motivo' => $res5['nomeskill'],
+						'descrizione' => $cond['descrX'],
+						'sino' => $sino
+					];
+					$esito[] = $rigarisp;
 				}
-				// Mostro il generico una volta sola, e solo se nessuno specifico è soddisfatto.
-				if ( !$specificoSoddisfatto && !isset($genericiAggiunti[$ids]) ) {
+			}
+		}
+	}
+
+	// 2) Generici: se soddisfatti, solo se nessuno specifico dello stesso generico è soddisfatto
+	foreach ($condizioni as $cond) {
+
+		if ($cond['tipocond'] == 'S' && !isset($specificiSoddisfatti[$cond['tabcond']]) ) {
+
+			$ids = $cond['tabcond'];
+			$Mysql4 = "SELECT * FROM skill LEFT JOIN skill_main ON skill_main.idskill = skill.idskill
+				WHERE skill_main.idskill = $ids AND skill.user_id = '$user_id' ";
+			$Result4 = mysqli_query($db, $Mysql4);
+
+			if ( $res4 = mysqli_fetch_array($Result4) ) {
+				if ( $res4['livello'] >= $cond['valcond'] ) {
 					$rigarisp = [
 						'motivo' => $res4['nomeskill'],
 						'descrizione' => $cond['descrX'],
 						'sino' => $cond['risp']
 					];
 					$esito[] = $rigarisp;
-					$genericiAggiunti[$ids] = true;
-				}									
-
-			}
-		}
-	}
-
-	foreach ($condizioni as $cond) {
-
-		if ($cond['tipocond'] == 'SS') {
-			$condizioneGenericaEsistente = false;
-			foreach ($condizioni as $condizioneGenerica) {
-				if (
-					$condizioneGenerica['tipocond'] == 'S'
-					&& $condizioneGenerica['tabcond'] == $cond['parentskill']
-				) {
-					$condizioneGenericaEsistente = true;
-					break;
-				}
-			}
-
-			if (!$condizioneGenericaEsistente) {
-				$specifica = $cond['tabcond'];
-				$mysql5 = "SELECT * FROM skill_main
-					LEFT JOIN skill ON skill_main.idskill = skill.idskill
-					WHERE skill_main.idskill = $specifica AND user_id = '$user_id' ";
-				$Result5 = mysqli_query($db, $mysql5);
-
-				if ($res5 = mysqli_fetch_array($Result5)) {
-					if ($res5['livello'] >= $cond['valcond']) {
-						$rigarisp = [
-							'motivo' => $res5['nomeskill'],
-							'descrizione' => $cond['descrX'],
-							'sino' => $cond['risp']
-						];
-						$esito[] = $rigarisp;
-					}
 				}
 			}
 		}
 	}
-		
+
 
 	$esitoSI = [];
 	$esitoNO = [];
