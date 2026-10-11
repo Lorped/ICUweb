@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 89.46.68.60:3306
--- Creato il: Set 16, 2026 alle 12:46
+-- Creato il: Ott 11, 2026 alle 16:16
 -- Versione del server: 5.0.96-community-log
 -- Versione PHP: 8.0.7
 
@@ -90,6 +90,17 @@ CREATE TABLE `dominio` (
 -- --------------------------------------------------------
 
 --
+-- Struttura della tabella `effetti`
+--
+
+CREATE TABLE `effetti` (
+  `IDoggetto` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Struttura della tabella `logscanfull`
 --
 
@@ -156,7 +167,8 @@ CREATE TABLE `oggetti` (
   `ifdomanda` smallint(6) NOT NULL DEFAULT '0',
   `domanda` varchar(1024) COLLATE utf8_unicode_ci DEFAULT NULL,
   `r1` varchar(1024) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `r2` varchar(1024) COLLATE utf8_unicode_ci DEFAULT NULL
+  `r2` varchar(1024) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `adddisciplina` int(11) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -187,6 +199,17 @@ CREATE TABLE `personaggio` (
   `IDsocieta` int(11) NOT NULL,
   `IDdominio` int(11) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struttura della tabella `prestampa`
+--
+
+CREATE TABLE `prestampa` (
+  `IDoggetto` int(11) NOT NULL,
+  `quantita` int(11) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -271,6 +294,12 @@ ALTER TABLE `dominio`
   ADD PRIMARY KEY (`IDdominio`);
 
 --
+-- Indici per le tabelle `effetti`
+--
+ALTER TABLE `effetti`
+  ADD UNIQUE KEY `IDoggetto` (`IDoggetto`,`user_id`);
+
+--
 -- Indici per le tabelle `logscanfull`
 --
 ALTER TABLE `logscanfull`
@@ -314,6 +343,12 @@ ALTER TABLE `paired`
 ALTER TABLE `personaggio`
   ADD PRIMARY KEY (`user_id`),
   ADD KEY `nome` (`nomepg`);
+
+--
+-- Indici per le tabelle `prestampa`
+--
+ALTER TABLE `prestampa`
+  ADD PRIMARY KEY (`IDoggetto`);
 
 --
 -- Indici per le tabelle `push_subscriptions`
