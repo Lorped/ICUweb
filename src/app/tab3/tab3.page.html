@@ -13,7 +13,7 @@
     @for (msg of messaggi; track msg) {
       <ion-item   >
         <ion-label class="ion-text-wrap" >
-          <p>{{msg.Ora}}</p><div><b>{{msg.nomepg}}</b>: {{msg.Testo}} </div>
+          <p>{{msg.Ora}}</p><div><b>{{msg.nomepg}}</b>:<span class="selectable">{{msg.Testo}}</span> </div>
         </ion-label>
       </ion-item>
     }
