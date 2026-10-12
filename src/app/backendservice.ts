@@ -9,14 +9,13 @@ export interface LoginResponse {
 export interface BarcodeResponse {
   nomeoggetto: string;
   descrizione: string;
-  esito: Array<Esito>;
+  esito: Esito[];
   domanda: string;
   R1: string;
   R2: string;
-  esitoSI: Array<Esito>;
-  esitoNO: Array<Esito>;
+  esitoSI: Esito[];
+  esitoNO: Esito[];
   refreshEffetti?: boolean;
-  refresheffetti?: boolean;
 }
 
 
@@ -54,12 +53,12 @@ export class Oggetto {
     public IDoggetto = '';
     public nomeoggetto = '';
     public descrizione = '';
-    public esito: Array<Esito> = [];
+    public esito: Esito[] = [];
     public domanda = '';
     public R1 = '';
     public R2 = '';
-    public esitoSI: Array<Esito> = [];
-    public esitoNO: Array<Esito> = [];
+    public esitoSI: Esito[] = [];
+    public esitoNO: Esito[] = [];
     public datascan = '';
     public refreshEffetti = false;
 }
@@ -128,7 +127,7 @@ export class Backendservice {
     }
 
     getscan(user_id: number) {
-      return this.http.get<Array<Oggetto>>('https://www.roma-by-night.it/ICU/getscan.php?user_id=' + user_id);
+      return this.http.get<Oggetto[]>('https://www.roma-by-night.it/ICU/getscan.php?user_id=' + user_id);
     }
 
     getmessaggi(user_id: number) {

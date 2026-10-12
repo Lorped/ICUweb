@@ -61,7 +61,7 @@ export class Tab2Page implements AfterViewInit, OnDestroy {
   giarisposto = false;
   rispostaselezionata = '';
   isModalOpen = false;
-  oldscan: Array<Oggetto> = [];
+  oldscan: Oggetto[] = [];
   private scanHistoryLoaded = false;
 
   constructor() {
@@ -231,7 +231,7 @@ export class Tab2Page implements AfterViewInit, OnDestroy {
       this.oggetto.esitoSI = data.esitoSI;
       this.oggetto.esitoNO = data.esitoNO;  
 
-      if (data.refreshEffetti === true || data.refresheffetti === true) {
+      if (data.refreshEffetti === true ) {
         this.backendservice.getPersonaggio(this.personaggio.user_id).subscribe({
           next: (personaggio) => {
             Object.assign(this.personaggio, personaggio);
