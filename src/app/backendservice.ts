@@ -20,47 +20,47 @@ export interface BarcodeResponse {
 
 
 export class Disciplina {
-  IDdisciplina: number = 0;
-  nomedisciplina: string = '';  //nome della disciplina DA LEFT JOIN
-  livello: number = 0;  //livello della disciplina
+  IDdisciplina = 0;
+  nomedisciplina = '';  //nome della disciplina DA LEFT JOIN
+  livello = 0;  //livello della disciplina
 }
 
 
 export class Subskill {
-    public IDskill = 0;
-    public nomeskill = '';
-    public livello = 0;
+    IDskill = 0;
+    nomeskill = '';
+    livello = 0;
 }
 export class Skill {
-    public IDskill = 0;
-    public nomeskill = '';
-    public livello = 0;
-    public subskills: Subskill[] = [];  //array delle sottocompetenze della skill
+    IDskill = 0;
+    nomeskill = '';
+    livello = 0;
+    subskills: Subskill[] = [];  //array delle sottocompetenze della skill
 }
 export class Otherskill {  //classe per le altre skill del personaggio
-    public IDskill = 0;
-    public nomeskill = '';
-    public livello = 0;
+    IDskill = 0;
+    nomeskill = '';
+    livello = 0;
 }
 
 export class Esito {
-    public motivo = '';
-    public descrizione = '';
-    public sino = '';
+    motivo = '';
+    descrizione = '';
+    sino = '';
 }
 
 export class Oggetto {
-    public IDoggetto = '';
-    public nomeoggetto = '';
-    public descrizione = '';
-    public esito: Esito[] = [];
-    public domanda = '';
-    public R1 = '';
-    public R2 = '';
-    public esitoSI: Esito[] = [];
-    public esitoNO: Esito[] = [];
-    public datascan = '';
-    public refreshEffetti = false;
+    IDoggetto = '';
+    nomeoggetto = '';
+    descrizione = '';
+    esito: Esito[] = [];
+    domanda = '';
+    R1 = '';
+    R2 = '';
+    esitoSI: Esito[] = [];
+    esitoNO: Esito[] = [];
+    datascan = '';
+    refreshEffetti = false;
 }
 
 
@@ -68,17 +68,17 @@ export class Oggetto {
   providedIn: 'root'
 })
 export class Personaggio {
-  user_id: number = 0;
-  // nomeutente: string = '';  //per il login
-  //password: string = '';
-  nomeplayer: string = '';  //nome del giocatore
-  nomepg: string = '';  //nome del personaggio
-  IDclan: number = 0;
-  nomeclan: string = '';  //nome del clan DA LEFT JOIN
-  IDsocieta: number = 0;
-  nomesocieta: string = '';  //nome della società DA LEFT JOIN
-  IDdominio: number = 0;
-  nomedominio: string = '';  //nome del dominio DA LEFT JOIN
+  user_id = 0;
+  // nomeutente = '';  //per il login
+  //password = '';
+  nomeplayer = '';  //nome del giocatore
+  nomepg = '';  //nome del personaggio
+  IDclan = 0;
+  nomeclan = '';  //nome del clan DA LEFT JOIN
+  IDsocieta = 0;
+  nomesocieta = '';  //nome della società DA LEFT JOIN
+  IDdominio = 0;
+  nomedominio = '';  //nome del dominio DA LEFT JOIN
   discipline: Disciplina[] = [];  //array delle discipline del personaggio
   skills: Skill[] = [];  //array delle skill del personaggio
   otherskills: Otherskill[] = [];  //array delle altre skill del personaggio
@@ -87,8 +87,8 @@ export class Personaggio {
 
 export class messaggi {
 	nomepg = '';
-	Ora: string = '';
-	Testo: string = '';
+	Ora = '';
+	Testo = '';
 }
 
 export interface MsgResponse {
@@ -104,7 +104,6 @@ export class Backendservice {
     private readonly messaggiRefreshSubject = new Subject<void>();
     readonly messaggiRefresh$ = this.messaggiRefreshSubject.asObservable();
 
-    constructor() {}
 
     notificaMessaggiAggiornati() {
       this.messaggiRefreshSubject.next();

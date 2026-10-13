@@ -36,7 +36,7 @@ export class Tab3Page implements OnInit {
   public personaggio = inject(Personaggio);
   messaggi: messaggi[] = [];
 
-  constructor() { }
+
 
   ngOnInit() {
     console.log('Tab3Page initialized');

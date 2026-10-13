@@ -7,5 +7,5 @@ import { IonApp, IonRouterOutlet } from '@ionic/angular';
   imports: [IonApp, IonRouterOutlet],
 })
 export class AppComponent {
-  constructor() {}
+  
 }
