@@ -7,6 +7,7 @@ export interface LoginResponse {
 }
 
 export interface BarcodeResponse {
+  IDoggetto: number;
   nomeoggetto: string;
   descrizione: string;
   esito: Esito[];
@@ -16,6 +17,9 @@ export interface BarcodeResponse {
   esitoSI: Esito[];
   esitoNO: Esito[];
   refreshEffetti?: boolean;
+  enigma: string;
+  soluzione: string;
+  premio: string;
 }
 
 
@@ -50,7 +54,8 @@ export class Esito {
 }
 
 export class Oggetto {
-    IDoggetto = '';
+    IDoggetto = 0;
+    barcode = '';
     nomeoggetto = '';
     descrizione = '';
     esito: Esito[] = [];
@@ -61,6 +66,9 @@ export class Oggetto {
     esitoNO: Esito[] = [];
     datascan = '';
     refreshEffetti = false;
+    enigma = '';
+    soluzione = '';
+    premio = '';
 }
 
 
@@ -137,6 +145,13 @@ export class Backendservice {
       return this.http.post(`https://www.roma-by-night.it/ICU/msgtomaster.php`, {
         idutente: user_id,
         messaggio: messaggio
+      });
+    }
+
+    writeenigma(user_id: number, IDoggetto: number) {
+      return this.http.post(`https://www.roma-by-night.it/ICU/writeenigma.php`, {
+        user_id: user_id,
+        IDoggetto: IDoggetto
       });
     }
 

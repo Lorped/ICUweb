@@ -21,6 +21,7 @@ import {
   IonToolbar,
   LoadingController,
   Platform,
+  IonInput,
 } from '@ionic/angular';
 import jsQR from 'jsqr';
 //import { Router } from '@angular/router';
@@ -30,7 +31,7 @@ import { Backendservice, Personaggio, Oggetto, BarcodeResponse } from '../backen
   selector: 'app-tab2',
   templateUrl: './tab2.page.html',
   styleUrls: ['./tab2.page.scss'],
-  imports: [IonButton, IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, IonRow, IonCol, IonModal, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonList, IonItem, IonLabel, IonText]
+  imports: [IonButton, IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, IonRow, IonCol, IonModal, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonList, IonItem, IonLabel, IonText, IonInput]
 })
 export class Tab2Page implements AfterViewInit, OnDestroy {
   @ViewChild('video') video?: ElementRef<HTMLVideoElement>;
@@ -63,6 +64,10 @@ export class Tab2Page implements AfterViewInit, OnDestroy {
   isModalOpen = false;
   oldscan: Oggetto[] = [];
   private scanHistoryLoaded = false;
+
+  rispostaenigma = '';
+  rispcorretta = 0;
+  numrisposte = 0;
 
   constructor() {
     const isStandaloneMode = (): boolean => 
@@ -222,6 +227,7 @@ export class Tab2Page implements AfterViewInit, OnDestroy {
       
       // console.log(data);
 
+      this.oggetto.IDoggetto = data.IDoggetto;
       this.oggetto.nomeoggetto = data.nomeoggetto;
       this.oggetto.descrizione = data.descrizione;
       this.oggetto.esito = data.esito;
@@ -229,7 +235,10 @@ export class Tab2Page implements AfterViewInit, OnDestroy {
       this.oggetto.R1 = data.R1;
       this.oggetto.R2 = data.R2;
       this.oggetto.esitoSI = data.esitoSI;
-      this.oggetto.esitoNO = data.esitoNO;  
+      this.oggetto.esitoNO = data.esitoNO;
+      this.oggetto.enigma = data.enigma;
+      this.oggetto.soluzione = data.soluzione;
+      this.oggetto.premio = data.premio;
 
       if (data.refreshEffetti === true ) {
         this.backendservice.getPersonaggio(this.personaggio.user_id).subscribe({
@@ -242,6 +251,10 @@ export class Tab2Page implements AfterViewInit, OnDestroy {
           }
         });
       }
+
+      this.rispostaenigma = '';
+      this.rispcorretta = 0;
+      this.numrisposte = 0;
 
       this.giarisposto = false;
       this.rispostaselezionata = '';
@@ -303,6 +316,29 @@ export class Tab2Page implements AfterViewInit, OnDestroy {
       this.scanHistoryLoaded = true;
       this.cdr.detectChanges();
     });
+  }
+
+  async RispostaEnigma() {
+    // Logica per gestire la risposta all'enigma
+    console.log('Risposta all\'enigma:', this.rispostaenigma);
+    if ( this.rispostaenigma.trim().toUpperCase() === this.oggetto.soluzione.trim().toUpperCase()) {
+
+      // alert('user_id = ' + this.personaggio.user_id + ', IDoggetto = ' + this.oggetto.IDoggetto);
+      
+      await this.backendservice.writeenigma(this.personaggio.user_id, this.oggetto.IDoggetto).subscribe();
+      this.rispcorretta = 1; // Risposta corretta sblocco enigma su frontend
+      this.backendservice.msgtomaster(this.personaggio.user_id,'Risolto enigma ' + this.oggetto.nomeoggetto).subscribe();
+
+      
+    } else {
+      this.rispcorretta = 0; // Risposta errata
+      this.numrisposte++;
+      if (this.numrisposte >= 10) {
+        //this.rispcorretta = -1; // Blocco dopo 10 tentativi
+        this.backendservice.msgtomaster(this.personaggio.user_id,'Tentativi esauriti per enigma ' + this.oggetto.nomeoggetto).subscribe();
+        this.cancel();
+      }
+    }
   }
 
 

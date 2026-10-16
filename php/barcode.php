@@ -86,6 +86,9 @@
 	$R1=$res8['r1'];
 	$R2=$res8['r2'];
 	$adddisciplina=$res8['adddisciplina'];
+	$enigma=$res8['enigma'];
+	$soluzione=$res8['soluzione'];
+	$premio=$res8['premio'];
 
 
 
@@ -447,6 +450,7 @@
 
 
 	$out = [
+		'IDoggetto' => $idx,
 		'nomeoggetto' => $nomeoggetto,
 		'descrizione' => $descrizione,
 		'esito' => $esito,
@@ -456,6 +460,9 @@
 		'R1' => $R1,
 		'R2' => $R2,
 		'refreshEffetti' => $refreshEffetti,
+		'enigma' => $enigma,
+		'soluzione' => $soluzione,
+		'premio' => $premio,
 	];
 
 	header("HTTP/1.1 200 OK");

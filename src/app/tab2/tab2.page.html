@@ -135,6 +135,53 @@
           </ion-card>
         }
 
+        <!-- enigma, soluzione, premio -->
+        @if (this.oggetto.enigma && this.oggetto.enigma !== '') {
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>Enigma</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              {{oggetto.enigma}}
+
+              <ion-row>
+                <ion-col class="alc">
+                  <ion-input placeholder="Inserisci la tua risposta" [disabled]="rispcorretta !== 0" [value]="rispostaenigma" (ionInput)="rispostaenigma = $any($event.target).value"></ion-input>
+                </ion-col>
+              </ion-row>
+              @if (rispcorretta === 0) {
+                <ion-row>
+                  <ion-col class="alc">
+                    @if (numrisposte === 0 ) {
+                    <ion-button  shape="round" outline color="primary" (click)="RispostaEnigma()" >Invia [{{numrisposte}}/10]</ion-button>
+                    } @else {
+                      <ion-button  shape="round" outline color="primary" (click)="RispostaEnigma()" >Riprova [{{numrisposte}}/10]</ion-button>
+                    }
+                  </ion-col>
+                </ion-row>
+              }
+              <ion-row>
+                <ion-col class="alc" >
+                  @if (rispcorretta === 0 && numrisposte > 0) {
+                    <span style="font-size: 1.5rem ; color: #FF0000;"> Risposta errata</span>
+                  }
+                </ion-col>
+              </ion-row>
+            </ion-card-content>
+          </ion-card>
+        }
+        @if (this.oggetto.premio && this.oggetto.premio !== '' && rispcorretta === 1) {
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>Esito</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <span class="selectable">{{oggetto.premio}}</span>
+            </ion-card-content>
+          </ion-card>
+        }
+
+
       </ion-content>
     </ng-template>
   </ion-modal>
