@@ -22,7 +22,7 @@ require_once __DIR__ . '/db2.inc.php';  //MYSQLI //
 
 	$fulloggetto = [];
 
-	$MySql = "SELECT IDoggetto, barcode, nomeoggetto, descrizione, fissomobile, ifdomanda, domanda, r1, r2, nomedisciplina as adddisciplina 
+	$MySql = "SELECT IDoggetto, barcode, nomeoggetto, descrizione, fissomobile, ifdomanda, domanda, r1, r2,enigma, soluzione, premio, nomedisciplina as adddisciplina 
 	FROM oggetti 
 	left join discipline_main on oggetti.adddisciplina = discipline_main.IDdisciplina 
 	WHERE IDoggetto = $IDoggetto
